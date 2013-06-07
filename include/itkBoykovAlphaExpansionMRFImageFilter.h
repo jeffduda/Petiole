@@ -22,6 +22,7 @@
 
 #include "itkGraph.h"
 #include "itkImage.h"
+#include "itkImageBase.h"
 #include "itkMRFImageFilter.h"
 #include "itkShapedNeighborhoodIterator.h"
 #include "itkBoykovGraphTraits.h"
@@ -64,7 +65,7 @@ namespace itk {
 template<typename TInputImage,
          typename TGraphTraits,
          typename TClassifiedImage =
-           Image<int, GetImageDimension<TInputImage>::ImageDimension> >
+         Image<int, itk::GetImageDimension<TInputImage>::ImageDimension> >
 class ITK_EXPORT BoykovAlphaExpansionMRFImageFilter
 : public MRFImageFilter<TInputImage, TClassifiedImage>
 {
