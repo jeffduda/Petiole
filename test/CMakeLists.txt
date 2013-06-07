@@ -1,5 +1,5 @@
 itk_module_test()
-set(ITKNetworkToolkitTests
+set(ITKPetioleToolkitTests
 itkDijkstrasDistanceMatrixGraphFilterTest.cxx
 itkDijkstrasPathGraphFilterTest.cxx
 itkDijkstrasGraphTraitsTest.cxx
@@ -29,89 +29,89 @@ itkVtkPolyDataFileReaderTest.cxx
 
 set(ITK_TEST_DRIVER itkTestDriver)
 
-CreateTestDriver(ITKNetworkToolkit "${ITKNetworkToolkit-Test_LIBRARIES}" "${ITKNetworkToolkitTests}")
+CreateTestDriver(ITKPetioleToolkit "${ITKPetioleToolkit-Test_LIBRARIES}" "${ITKPetioleToolkitTests}")
 
-set(TEST_DATA_ROOT "${ITKNetworkToolkit_SOURCE_DIR}/Data")
+set(TEST_DATA_ROOT "${ITKPetioleToolkit_SOURCE_DIR}/Data")
 set(TEMP ${ITK_TEST_OUTPUT_DIR})
 
 itk_add_test(NAME itkDijkstrasDistanceMatrixGraphFilterTest COMMAND
-                    ITKNetworkToolkitTestDriver
+                    ITKPetioleToolkitTestDriver
                     itkDijkstrasDistanceMatrixGraphFilterTest)
 itk_add_test(NAME itkDijkstrasPathGraphFilterTest COMMAND
-                    ITKNetworkToolkitTestDriver
+                    ITKPetioleToolkitTestDriver
                     itkDijkstrasPathGraphFilterTest)
 itk_add_test(NAME itkDijkstrasGraphTraitsTest COMMAND
-                    ITKNetworkToolkitTestDriver
+                    ITKPetioleToolkitTestDriver
                     itkDijkstrasGraphTraitsTest)
 itk_add_test(NAME itkDijkstrasUniquePathsGraphFilterTest COMMAND
-                    ITKNetworkToolkitTestDriver
+                    ITKPetioleToolkitTestDriver
                     itkDijkstrasUniquePathsGraphFilterTest)
 itk_add_test(NAME itkGraphFileReaderTest COMMAND
-                    ITKNetworkToolkitTestDriver
+                    ITKPetioleToolkitTestDriver
                     itkGraphFileReaderTest
                     ${TEST_DATA_ROOT}/WikipediaDisjkstrasMesh.vtk)
 #itk_add_test(NAME itkGraphFileWriterTest COMMAND
-#                   ITKNetworkToolkitTestDriver
+#                   ITKPetioleToolkitTestDriver
 #                   itkGraphFileReaderTest
 #                   ${ITK_TEST_OUTPUT_DIR}/itkGraphFileWriteTest.vtk)
 itk_add_test(NAME itkExtractSubgraphFilterTest COMMAND
-                    ITKNetworkToolkitTestDriver
+                    ITKPetioleToolkitTestDriver
                     itkExtractSubgraphFilterTest)
 itk_add_test(NAME itkExtractKCoreGraphFilterTest COMMAND
-                    ITKNetworkToolkitTestDriver
+                    ITKPetioleToolkitTestDriver
                     itkExtractKCoreGraphFilterTest)
 itk_add_test(NAME itkExtractSCoreGraphFilterTest COMMAND
-                    ITKNetworkToolkitTestDriver
+                    ITKPetioleToolkitTestDriver
                     itkExtractSCoreGraphFilterTest)
 itk_add_test(NAME itkGraphNodeAssortativityCalculatorTest COMMAND
-                    ITKNetworkToolkitTestDriver
+                    ITKPetioleToolkitTestDriver
                     itkGraphNodeAssortativityCalculatorTest)
 itk_add_test(NAME itkGraphNodeClusteringCoefficientCalculatorTest COMMAND
-                    ITKNetworkToolkitTestDriver
+                    ITKPetioleToolkitTestDriver
                     itkGraphNodeClusteringCoefficientCalculatorTest)
 itk_add_test(NAME itkGraphNodeDegreeCentralityCalculatorTest COMMAND
-                    ITKNetworkToolkitTestDriver
+                    ITKPetioleToolkitTestDriver
                     itkGraphNodeDegreeCentralityCalculatorTest)
 itk_add_test(NAME itkGraphDensityCalculatorTest COMMAND
-                    ITKNetworkToolkitTestDriver
+                    ITKPetioleToolkitTestDriver
                     itkGraphDensityCalculatorTest)
 itk_add_test(NAME itkGraphNodeJointDegreeCalculatorTest COMMAND
-                    ITKNetworkToolkitTestDriver
+                    ITKPetioleToolkitTestDriver
                     itkGraphNodeJointDegreeCalculatorTest)
 itk_add_test(NAME itkGraphNodeNeighborhoodOverlapCalculatorTest COMMAND
-                    ITKNetworkToolkitTestDriver
+                    ITKPetioleToolkitTestDriver
                     itkGraphNodeNeighborhoodOverlapCalculatorTest)
 itk_add_test(NAME itkGraphRichClubCoefficientCalculatorTest COMMAND
-                    ITKNetworkToolkitTestDriver
+                    ITKPetioleToolkitTestDriver
                     itkGraphRichClubCoefficientCalculatorTest)
 itk_add_test(NAME itkGraphNodeStrengthCalculatorTest COMMAND
-                    ITKNetworkToolkitTestDriver
+                    ITKPetioleToolkitTestDriver
                     itkGraphNodeStrengthCalculatorTest)
-itk_add_test(NAME itkGraphTest COMMAND ITKNetworkToolkitTestDriver
+itk_add_test(NAME itkGraphTest COMMAND ITKPetioleToolkitTestDriver
                     itkGraphTest)
 itk_add_test(NAME itkGraphTopologicalOverlapCalculatorTest COMMAND
-                    ITKNetworkToolkitTestDriver
+                    ITKPetioleToolkitTestDriver
                     itkGraphTopologicalOverlapCalculatorTest)
 itk_add_test(NAME itkExtractRichClubGraphFilterTest COMMAND
-                    ITKNetworkToolkitTestDriver
+                    ITKPetioleToolkitTestDriver
                     itkExractRichClubGraphFilterTest)
 itk_add_test(NAME itkMatlabLevel5FileReaderTest COMMAND
-                    ITKNetworkToolkitTestDriver
+                    ITKPetioleToolkitTestDriver
                     itkMatlabLevel5FileReaderTest
                     ${TEST_DATA_ROOT}/cat.mat )
 itk_add_test(NAME itkMatrixToGraphFilterTest COMMAND
-                    ITKNetworkToolkitTestDriver
+                    ITKPetioleToolkitTestDriver
                     itkMatrixToGraphFilterTest)
 itk_add_test(NAME itkNWBDataFileReaderTest COMMAND
-                    ITKNetworkToolkitTestDriver itkNWBDataFileReaderTest
+                    ITKPetioleToolkitTestDriver itkNWBDataFileReaderTest
                     ${TEST_DATA_ROOT}/WikipediaDisjkstrasMesh.nwb)
 itk_add_test(NAME itkNWBDataFileWriterTest COMMAND
-                    ITKNetworkToolkitTestDriver itkNWBDataFileWriterTest
+                    ITKPetioleToolkitTestDriver itkNWBDataFileWriterTest
                     ${ITK_TEST_OUTPUT_DIR}/NWBDataFileWriterTest.nwb)
 itk_add_test(NAME itkVtkPolyDataFileReaderTest COMMAND
-                    ITKNetworkToolkitTestDriver itkVtkPolyDataFileReaderTest
+                    ITKPetioleToolkitTestDriver itkVtkPolyDataFileReaderTest
                     ${TEST_DATA_ROOT}/WikipediaDisjkstrasMesh.vtk)
 
-#itk_add_test(NAME itkBoykovGraphCutFilterTest COMMAND ITKNetworkToolkitTestDriver itkBoykovGraphCutFilterTest)
+#itk_add_test(NAME itkBoykovGraphCutFilterTest COMMAND ITKPetioleToolkitTestDriver itkBoykovGraphCutFilterTest)
 
 
