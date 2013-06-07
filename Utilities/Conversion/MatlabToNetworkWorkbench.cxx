@@ -27,7 +27,7 @@
 
 int main( int argc, char * argv [] )
 {
-
+  /*
   // Read PolyData as PointSet
   // Can read into mesh, but cells will not be filled, just points
   typedef itk::MatlabLevel5FileReader<float>    MatlabReaderType;
@@ -69,6 +69,7 @@ int main( int argc, char * argv [] )
     return EXIT_FAILURE;
     }
 
+  
   unsigned int nVar = atoi( argv[2] );
   std::cout << reader->GetVariableName(nVar) << " has dimensions: ";
   for ( unsigned int j=0; j<reader->GetVariableDimensions( nVar )->Size(); j++)
@@ -97,6 +98,7 @@ int main( int argc, char * argv [] )
   writer->SetFileName( argv[3] );
   writer->SetInput( filter->GetOutput() );
   writer->Update();
+  */
 
   return EXIT_SUCCESS;
 }
