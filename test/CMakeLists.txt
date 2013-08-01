@@ -112,6 +112,3 @@ itk_add_test(NAME itkVtkPolyDataFileReaderTest COMMAND
                     ITKPetioleToolkitTestDriver itkVtkPolyDataFileReaderTest
                     ${TEST_DATA_ROOT}/WikipediaDisjkstrasMesh.vtk)
 
-#itk_add_test(NAME itkBoykovGraphCutFilterTest COMMAND ITKPetioleToolkitTestDriver itkBoykovGraphCutFilterTest)
-
-
