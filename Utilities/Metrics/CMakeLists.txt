@@ -28,6 +28,6 @@ ADD_EXECUTABLE(petioleCharacteristicPathLength CharacteristicPathLength.cxx )
 TARGET_LINK_LIBRARIES(petioleCharacteristicPathLength
  ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
 
-ADD_EXECUTABLE(petioleGlobalEfficiency GlobalEfficienty.cxx )
+ADD_EXECUTABLE(petioleGlobalEfficiency GlobalEfficiency.cxx )
 TARGET_LINK_LIBRARIES(petioleGlobalEfficiency
  ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )

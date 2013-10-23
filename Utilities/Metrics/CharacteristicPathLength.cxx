@@ -66,7 +66,7 @@ int main( int argc, char * argv [] )
     }
     
   GraphType::Pointer graph = reader->GetOutput();
-  graph->SetIsDirected( directed );
+  graph->SetIsDirected( false );
   graph->SetIncomingAndOutgoingEdges();
 
   SearchGraphType::Pointer dgraph = SearchGraphType::New();
@@ -87,8 +87,6 @@ int main( int argc, char * argv [] )
       {
       edge->Weight = 1.0;
       }
-    }
-
     }
     
   FilterType::Pointer dijkstras = FilterType::New();

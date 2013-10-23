@@ -93,7 +93,7 @@ int main( int argc, char * argv [] )
   dijkstras->SetInput( dgraph );
   dijkstras->Update();
 
-  std::cout << dijkstras->GetGloablEfficiency() << std::endl;
+  std::cout << dijkstras->GetGlobalEfficiency() << std::endl;
 
   return EXIT_SUCCESS;
 }
