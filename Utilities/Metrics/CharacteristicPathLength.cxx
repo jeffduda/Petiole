@@ -19,7 +19,7 @@
 #endif
 
 #include <iostream>
-#include "itkImageGraphTraits.h"
+#include "itkDijkstrasGraphTraits.h"
 #include "itkGraph.h"
 #include "itkGraphFileReader.h"
 #include "itkDijkstrasDistanceMatrixGraphFilter.h"
@@ -27,8 +27,7 @@
 
 int main( int argc, char * argv [] )
 {
-
-  typedef itk::ImageGraphTraits<int,3>                       GraphTraitsType;
+  typedef itk::DijkstrasGraphTraits<float,3>                 GraphTraitsType;
   typedef itk::Graph<GraphTraitsType>                        GraphType;
   typedef itk::GraphFileReader<GraphType>                    GraphReaderType;
   typedef itk::DijkstrasDistanceMatrixGraphFilter<GraphType> FilterType;
@@ -67,8 +66,8 @@ int main( int argc, char * argv [] )
   graph->SetIsDirected( directed );
   graph->SetIncomingAndOutgoingEdges();
     
-  FilterType::Pointer diskstras = FilterType::New();
-  diskstras->SetGraph( graph );
+  FilterType::Pointer dijkstras = FilterType::New();
+  dijkstras->SetInput( graph );
   dijkstras->Update();
 
   std::cout << dijkstras->GetCharacteristicPathLength() << std::endl;

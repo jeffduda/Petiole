@@ -187,7 +187,7 @@ GraphFileWriter<TInputGraph,TInputImage>
     float v = edge->Weight;
     dataMatrix(r,c) = v;
     dataMatrix(c,r) = v;
-    std::cout << i << ":" << v << std::endl;
+    //std::cout << i << ":" << v << std::endl;
     }
   
   const CSVMatrixType * mat = &dataMatrix;
@@ -199,7 +199,7 @@ GraphFileWriter<TInputGraph,TInputImage>
     {
     writer->SetColumnHeaders( this->m_ColumnHeaders );
     }
-  writer->Update();
+  writer->Update(); 
 
 }
 
