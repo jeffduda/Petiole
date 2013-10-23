@@ -12,9 +12,9 @@ TARGET_LINK_LIBRARIES(petioleRichClubCoefficient
 #TARGET_LINK_LIBRARIES(petioleGraphDensity
 # ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
 
-#ADD_EXECUTABLE(petioleMeanNodeDegree MeanNodeDegree.cxx )
-#TARGET_LINK_LIBRARIES(petioleMeanNodeDegree
-# ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
+ADD_EXECUTABLE(petioleMeanNodeDegree MeanNodeDegree.cxx )
+TARGET_LINK_LIBRARIES(petioleMeanNodeDegree
+ ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
 
 ADD_EXECUTABLE(petioleMeanNodeClusteringCoefficient MeanNodeClusteringCoefficient.cxx )
 TARGET_LINK_LIBRARIES(petioleMeanNodeClusteringCoefficient
