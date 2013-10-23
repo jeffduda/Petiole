@@ -66,7 +66,7 @@ int main( int argc, char * argv [] )
     }
     
   GraphType::Pointer graph = reader->GetOutput();
-  graph->SetIsDirected( directed );
+  graph->SetIsDirected( false );
   graph->SetIncomingAndOutgoingEdges();
 
   SearchGraphType::Pointer dgraph = SearchGraphType::New();
@@ -88,14 +88,12 @@ int main( int argc, char * argv [] )
       edge->Weight = 1.0;
       }
     }
-
-    }
     
   FilterType::Pointer dijkstras = FilterType::New();
   dijkstras->SetInput( dgraph );
   dijkstras->Update();
 
-  std::cout << dijkstras->GetCharacteristicPathLength() << std::endl;
+  std::cout << dijkstras->GetGloablEfficiency() << std::endl;
 
   return EXIT_SUCCESS;
 }
