@@ -19,6 +19,7 @@
 #endif
 
 #include <iostream>
+#include "itkImageGraphTraits.h"
 #include "itkDijkstrasGraphTraits.h"
 #include "itkGraph.h"
 #include "itkGraphFileReader.h"
@@ -27,14 +28,16 @@
 
 int main( int argc, char * argv [] )
 {
-  typedef itk::DijkstrasGraphTraits<float,3>                 GraphTraitsType;
-  typedef itk::Graph<GraphTraitsType>                        GraphType;
-  typedef itk::GraphFileReader<GraphType>                    GraphReaderType;
-  typedef itk::DijkstrasDistanceMatrixGraphFilter<GraphType> FilterType;
+  typedef itk::ImageGraphTraits<float,3>                           ImageGraphTraits;
+  typedef itk::DijkstrasGraphTraits<float,3>                       GraphTraitsType;
+  typedef itk::Graph<ImageGraphTraits>                             GraphType;
+  typedef itk::GraphFileReader<GraphType>                          GraphReaderType;
+  typedef itk::Graph<GraphTraitsType>                              SearchGraphType;
+  typedef itk::DijkstrasDistanceMatrixGraphFilter<SearchGraphType> FilterType;
 
   if ( argc < 2 )
     {
-    std::cout << "usage: " << argv[0] << "input.csv [1=directed] " << std::endl;
+    std::cout << "usage: " << argv[0] << "input.csv [0=unweighted,1=weighted] " << std::endl;
     return EXIT_FAILURE;
     }
 
@@ -42,12 +45,12 @@ int main( int argc, char * argv [] )
   reader->SetFileName( argv[1] );
   std::cout << "Reading file: " << argv[1] << std::endl;
 
-  bool directed = false;
+  bool weighted = false;
   if ( argc > 2 ) 
     {
     if ( atoi( argv[2] ) > 0 ) 
       {
-      directed = true;
+      weighted = true;
       }
     }
 
@@ -65,9 +68,31 @@ int main( int argc, char * argv [] )
   GraphType::Pointer graph = reader->GetOutput();
   graph->SetIsDirected( directed );
   graph->SetIncomingAndOutgoingEdges();
+
+  SearchGraphType::Pointer dgraph = SearchGraphType::New();
+  for (unsigned long i=0; i<graph->GetTotalNumberOfNodes(); i++)
+    {
+    dgraph->CreateNewNode();
+    }
+  for (unsigned long i=0; i<graph->GetTotalNumberOfEdges(); i++)
+    {
+    SearchGraphType::EdgePointerType edge = dgraph->CreateNewEdge();
+    edge->SourceIdentifier = graph->GetEdgePointer(i)->SourceIdentifier;
+    edge->TargetIdentifier = graph->GetEdgePointer(i)->TargetIdentifier;
+    if ( weighted ) 
+      {
+      edge->Weight = graph->GetEdgePointer(i)->Weight;
+      }
+    else
+      {
+      edge->Weight = 1.0;
+      }
+    }
+
+    }
     
   FilterType::Pointer dijkstras = FilterType::New();
-  dijkstras->SetInput( graph );
+  dijkstras->SetInput( dgraph );
   dijkstras->Update();
 
   std::cout << dijkstras->GetCharacteristicPathLength() << std::endl;
