@@ -23,6 +23,7 @@
 #include "itkVtkPolyDataFileReader.h"
 #include "itkImageFileReader.h"
 #include "itkImageRegionIteratorWithIndex.h"
+#include "itkCSVArray2DFileReader.h"
 
 namespace itk
 {
@@ -84,6 +85,11 @@ public:
   typedef ImageFileReader<ImageMatrixType>              ImageMatrixReaderType;
   typedef ImageRegionIteratorWithIndex<ImageMatrixType> 
                                                         ImageMatrixIterator;
+
+  typedef itk::CSVArray2DFileReader< float >            CSVReaderType;
+  typedef typename CSVReaderType::Array2DDataObjectType CSVDataType;
+
+  typedef typename CSVReaderType::Array2DDataObjectType::StringVectorType NamesType;
     
   /** Set/Get the name of the file where data are written. */
   itkSetStringMacro( FileName );
@@ -91,6 +97,8 @@ public:
 
   itkSetMacro( IsDirected, bool );
   itkGetMacro( IsDirected, bool );
+
+  itkGetMacro( ColumnHeaders, NamesType );
 
   /** Get the output Graph of this process object.  */
   GraphType * GetOutput( void );
@@ -105,6 +113,8 @@ protected:
 
   void GenerateData();
 
+  void ReadCSVData();
+
   void ReadVtkPolyData();
 
   void ReadImageAsMatrixData();
@@ -118,6 +128,8 @@ private:
   void operator=( const GraphFileReader& ); //purposely not
                                             //implemented
   bool m_IsDirected;
+
+  NamesType m_ColumnHeaders;
 
 
 };

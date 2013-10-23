@@ -117,6 +117,10 @@ GraphFileReader<TGraph,TImage>
     {
     this->ReadVtkPolyData();
     }
+  if ( extension == "csv" )
+    {
+    this->ReadCSVData();
+    }
   else if ( extension == "mat" )
     {
     std::cout << "Attempt to read matlab file" << std::endl;
@@ -175,6 +179,77 @@ GraphFileReader<TGraph,TImage>
     }
 
 }
+
+template <class TGraph, class TImage>
+void
+GraphFileReader<TGraph,TImage>
+::ReadCSVData()
+{
+
+  GraphPointer output = this->GetOutput();
+
+  typename CSVReaderType::Pointer reader = CSVReaderType::New();
+  reader->SetFileName( this->m_FileName );
+  reader->HasRowHeadersOff();
+  reader->HasColumnHeadersOn();
+
+  try 
+    {
+    reader->Update();
+    }
+  catch( itk::ExceptionObject & excp )
+    {
+    itkExceptionMacro( "Failed to read input as csv: " << this->m_FileName );
+    }
+
+  typename CSVReaderType::Array2DDataObjectType * array =
+    reader->GetModifiableArray2DDataObject();
+
+  this->m_ColumnHeaders = array->GetColumnHeaders();
+
+  unsigned int nNodes = array->GetMatrix().cols();
+  
+  
+  if ( nNodes != array->GetMatrix().rows() )
+    {
+    std::cout << "Rows = " << array->GetMatrix().rows() << " Cols = " << array->GetMatrix().cols() << std::endl;
+    itkExceptionMacro( "Failed to read csv file as square matrix: " << this->m_FileName );
+    }
+
+  for (unsigned int i=0; i<nNodes; i++)
+    {
+    NodePointerType node = output->CreateNewNode();
+
+    for (unsigned int j=0; j<ImageType::ImageDimension; j++)
+      {
+      node->ImageIndex[j] = i;
+      }
+    }
+
+  for ( unsigned int i=0; i<nNodes; i++)
+    {
+    unsigned int startj = 0;
+    if ( ! this->m_IsDirected )
+      {
+      startj = i+1;
+      }
+
+    for ( unsigned int j=startj; j < nNodes; j++)
+      {
+      float value = array->GetMatrix()(j,i);
+
+      if ( value != 0.0 )
+        {
+        EdgePointerType edge = output->CreateNewEdge();
+        edge->SourceIdentifier = i;
+        edge->TargetIdentifier = j;
+        edge->Weight = value;
+        }
+      }
+    }
+
+}
+
 
 template <class TGraph, class TImage>
 void

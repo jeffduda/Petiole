@@ -111,6 +111,10 @@ GraphFileWriter<TInputGraph,TInputImage>
     {
     this->WriteVtkPolyData();
     }
+  else if ( extension == "csv" ) 
+    {
+    this->WriteCSV();
+    }
   else if(( extension == "dot" ) || (extension == "gv") )
     {
     this->WriteDot();
@@ -161,6 +165,40 @@ GraphFileWriter<TInputGraph,TInputImage>
   writer->SetFileName( this->m_FileName );
   writer->SetInput( mesh );
   writer->SetLines( lines );
+  writer->Update();
+
+}
+
+template<class TInputGraph, class TInputImage>
+void
+GraphFileWriter<TInputGraph,TInputImage>
+::WriteCSV()
+{
+
+  // convert to CSV data type
+  unsigned long nNodes = this->m_Input->GetTotalNumberOfNodes();
+  CSVMatrixType dataMatrix( nNodes, nNodes, 0.0 );
+  
+  for ( unsigned int i=0; i<this->m_Input->GetTotalNumberOfEdges(); i++)
+    {
+    const typename InputGraphType::EdgePointerType edge = this->m_Input->GetEdgePointer(i);
+    unsigned int r = edge->SourceIdentifier;
+    unsigned int c = edge->TargetIdentifier;
+    float v = edge->Weight;
+    dataMatrix(r,c) = v;
+    dataMatrix(c,r) = v;
+    std::cout << i << ":" << v << std::endl;
+    }
+  
+  const CSVMatrixType * mat = &dataMatrix;
+
+  typename CSVWriterType::Pointer writer = CSVWriterType::New();
+  writer->SetInput( mat );
+  writer->SetFileName( this->m_FileName );
+  if ( this->m_ColumnHeaders.size() > 0 )
+    {
+    writer->SetColumnHeaders( this->m_ColumnHeaders );
+    }
   writer->Update();
 
 }

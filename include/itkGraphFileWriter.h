@@ -20,7 +20,7 @@
 #include "itkGraph.h"
 #include "itkMesh.h"
 #include "itkVtkPolyDataFileWriter.h"
-
+#include "itkCSVNumericObjectFileWriter.h"
 
 namespace itk {
 
@@ -68,12 +68,21 @@ public:
   typedef TInputImage                              InputImageType;
   typedef typename InputImageType::IndexType       ImageIndexType;
 
+  typedef itk::CSVNumericObjectFileWriter< float >      CSVWriterType;
+  typedef typename CSVWriterType::vnlMatrixType         CSVMatrixType;
+  typedef typename CSVWriterType::StringVectorType      NamesType;
+
+  //typedef typename CSVWriterType::Array2DDataObjectType::StringVectorType NamesType;
+
   /** Set the Input */
   void SetInput( InputGraphType * input );
 
   /** Set/Get the name of the file where data are written. */
   itkSetStringMacro( FileName );
   itkGetStringMacro( FileName );
+
+  itkSetMacro( ColumnHeaders, NamesType );
+  itkGetMacro( ColumnHeaders, NamesType );
 
 protected:
   GraphFileWriter();
@@ -90,9 +99,13 @@ private:
   GraphFileWriter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
+  void WriteCSV();
+
   void WriteVtkPolyData();
 
   void WriteDot();
+
+  NamesType m_ColumnHeaders;
 
 };
 
