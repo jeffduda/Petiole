@@ -8,9 +8,9 @@ TARGET_LINK_LIBRARIES(petioleRichClubCoefficient
 #TARGET_LINK_LIBRARIES(petioleNormalizeConnectivityMatrix
 # ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
 
-#ADD_EXECUTABLE(petioleGraphDensity GraphDensity.cxx )
-#TARGET_LINK_LIBRARIES(petioleGraphDensity
-# ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
+ADD_EXECUTABLE(petioleGraphDensity GraphDensity.cxx )
+TARGET_LINK_LIBRARIES(petioleGraphDensity
+ ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
 
 ADD_EXECUTABLE(petioleMeanNodeDegree MeanNodeDegree.cxx )
 TARGET_LINK_LIBRARIES(petioleMeanNodeDegree
