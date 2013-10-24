@@ -39,3 +39,7 @@ TARGET_LINK_LIBRARIES(petioleGraphDiceCoefficient
 ADD_EXECUTABLE(petioleGraphVolumeNormalize GraphVolumeNormalize.cxx )
 TARGET_LINK_LIBRARIES(petioleGraphVolumeNormalize
  ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
+
+ADD_EXECUTABLE(petioleGraphVolumeLengthNormalize GraphVolumeLengthNormalize.cxx )
+TARGET_LINK_LIBRARIES(petioleGraphVolumeLengthNormalize
+ ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )

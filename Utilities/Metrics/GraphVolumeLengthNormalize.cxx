@@ -48,7 +48,7 @@ int main( int argc, char * argv [] )
 
   if ( argc < 3 )
     {
-    std::cout << "usage: " << argv[0] << "input1.csv volumes.img output.csv" << std::endl;
+    std::cout << "usage: " << argv[0] << "input1.csv length.csv volumes.img output.csv" << std::endl;
     return EXIT_FAILURE;
     }
 
@@ -65,8 +65,21 @@ int main( int argc, char * argv [] )
     }
   GraphType::Pointer graph = reader->GetOutput();
 
+  GraphReaderType::Pointer reader2 = GraphReaderType::New();
+  reader2->SetFileName( argv[2] );
+  try 
+    {
+    reader2->Update();
+    }
+  catch( itk::ExceptionObject & excp )
+    {
+    std::cerr << excp << std::endl;
+    return EXIT_FAILURE;
+    }
+  GraphType::Pointer length = reader2->GetOutput();
+
   ImageReaderType::Pointer imgReader = ImageReaderType::New();
-  imgReader->SetFileName( argv[2] );
+  imgReader->SetFileName( argv[3] );
   try 
     {
     imgReader->Update();
@@ -105,11 +118,11 @@ int main( int argc, char * argv [] )
     nedge->SourceIdentifier = edge->SourceIdentifier;
     nedge->TargetIdentifier = edge->TargetIdentifier;
     nedge->Weight = edge->Weight / (volumes[edge->SourceIdentifier]+volumes[edge->TargetIdentifier]);
-    
+    nedge->Weight /= length->GetEdgePointer(i)->Weight;
     }
 
   GraphWriterType::Pointer writer = GraphWriterType::New();
-  writer->SetFileName( argv[3] );
+  writer->SetFileName( argv[4] );
   writer->SetInput( normGraph );
   writer->SetColumnHeaders( reader->GetColumnHeaders() ); 
   
