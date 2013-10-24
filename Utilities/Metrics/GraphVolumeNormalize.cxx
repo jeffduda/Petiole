@@ -19,10 +19,15 @@
 #endif
 
 #include <iostream>
+#include "itkArray.h"
 #include "itkImageGraphTraits.h"
 #include "itkGraph.h"
+#include "itkImage.h"
+#include "itkImageFileReader.h"
+#include "itkImageRegionIteratorWithIndex.h"
 #include "itkGraphFileReader.h"
 #include "itkGraphFileWriter.h"
+#include "../../../../../Modules/IO/NIFTI/include/itkNiftiImageIO.h"
 
 
 int main( int argc, char * argv [] )
@@ -33,9 +38,17 @@ int main( int argc, char * argv [] )
   typedef itk::GraphFileReader<GraphType>                GraphReaderType;
   typedef itk::GraphFileWriter<GraphType>                GraphWriterType;
 
+  typedef itk::Array<float>                              ArrayType;
+  typedef itk::Image<int, 3>                             ImageType;
+  typedef itk::ImageFileReader<ImageType>                ImageReaderType;
+  typedef itk::ImageRegionIteratorWithIndex<ImageType>   ImageIteratorType;
+
+  // Must be a better way to do this
+  itk::ObjectFactoryBase::RegisterFactory(itk::NiftiImageIOFactory::New());
+
   if ( argc < 3 )
     {
-    std::cout << "usage: " << argv[0] << "input1.csv input2.csv [overlap_graph.csv]" << std::endl;
+    std::cout << "usage: " << argv[0] << "input1.csv volumes.img output.csv" << std::endl;
     return EXIT_FAILURE;
     }
 
@@ -50,85 +63,53 @@ int main( int argc, char * argv [] )
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
     }
-  GraphType::Pointer graph1 = reader->GetOutput();
+  GraphType::Pointer graph = reader->GetOutput();
 
-  GraphReaderType::Pointer reader2 = GraphReaderType::New();
-  reader2->SetFileName( argv[2] );
+  ImageReaderType::Pointer imgReader = ImageReaderType::New();
+  imgReader->SetFileName( argv[2] );
   try 
     {
-    reader2->Update();
+    imgReader->Update();
     }
   catch( itk::ExceptionObject & excp )
     {
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
     }
-  GraphType::Pointer graph2 = reader2->GetOutput();
+  ImageType::Pointer img = imgReader->GetOutput();
 
-  GraphType::Pointer overlapGraph;
-  bool overlap = false;
-  if ( argc > 3 ) 
+  ArrayType volumes(graph->GetTotalNumberOfNodes());
+  volumes.Fill(0.0);
+
+  ImageIteratorType it( img, img->GetLargestPossibleRegion() );
+  while( !it.IsAtEnd() )
     {
-    overlap = true;
-    overlapGraph = GraphType::New();
-    for (unsigned long i=0; i<graph1->GetTotalNumberOfNodes(); i++)
+    if ( it.Value() > 0 )
       {
-      overlapGraph->CreateNewNode();
+      volumes[it.Value()-1] += 1;
       }
+    ++it;
     }
 
-  unsigned long intersection = 0;
-  for (unsigned long i=0; i<graph1->GetTotalNumberOfEdges(); i++)
+  for ( unsigned long i=0; i<graph->GetTotalNumberOfEdges(); i++ )
     {
-    bool matched = false;
-    unsigned long j=0;
-    const GraphType::EdgePointerType edge1 = graph1->GetEdgePointer(i);
-    while ( (!matched) && (j < graph2->GetTotalNumberOfEdges()) ) 
-      {
-      if ( (graph2->GetEdgePointer(j)->SourceIdentifier == edge1->SourceIdentifier) &&
-           (graph2->GetEdgePointer(j)->TargetIdentifier == edge1->TargetIdentifier) )
-        {
-        matched = true;
-        ++intersection;
-        }
-      else if ( (graph2->GetEdgePointer(j)->SourceIdentifier == edge1->TargetIdentifier) &&
-           (graph2->GetEdgePointer(j)->TargetIdentifier == edge1->SourceIdentifier) )
-        {
-        matched = true;
-        ++intersection;
-        }
-      if ( matched && overlap) 
-        {
-        GraphType::EdgePointerType newedge = overlapGraph->CreateNewEdge();
-        newedge->SourceIdentifier = edge1->SourceIdentifier;
-        newedge->TargetIdentifier = edge1->TargetIdentifier;
-        newedge->Weight = 1;
-        }
-
-      ++j;
-      }
+    GraphType::EdgePoitnerType edge = graph->GetEdgePointer(i);
+    egde->Weight = edge->Weight / (volumes[edge->SourceIdentifier]+volumes[edge->TargetIdentifier]);
     }
-    
-  std::cout << "intesection = " << intersection << std::endl;
-  float dice = 2.0 * intersection / ( graph1->GetTotalNumberOfEdges() + graph2->GetTotalNumberOfEdges() );
-  std::cout << dice << std::endl;
 
-  if ( overlap && (intersection > 0) )
+  GraphWriterType::Pointer writer = GraphWriterType::New();
+  writer->SetFileName( argv[3] );
+  writer->SetInput( graph );
+  writer->SetColumnHeaders( reader->GetColumnHeaders() ); 
+  
+  try 
     {
-    GraphWriterType::Pointer writer = GraphWriterType::New();
-    writer->SetFileName( argv[3] );
-    writer->SetInput( overlapGraph );
-    writer->SetColumnHeaders( reader->GetColumnHeaders() ); 
-    
-    try 
-      {
-      writer->Update();
-      }
-    catch( itk::ExceptionObject & excp )
-      {
-      std::cerr << excp << std::endl;
-      return EXIT_FAILURE;
-      }
+    writer->Update();
+    }
+  catch( itk::ExceptionObject & excp )
+    {
+    std::cerr << excp << std::endl;
+    return EXIT_FAILURE;
     }
   
   return EXIT_SUCCESS;

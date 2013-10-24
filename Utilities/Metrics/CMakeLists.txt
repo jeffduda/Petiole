@@ -35,3 +35,7 @@ TARGET_LINK_LIBRARIES(petioleGlobalEfficiency
 ADD_EXECUTABLE(petioleGraphDiceCoefficient GraphDiceCoefficient.cxx )
 TARGET_LINK_LIBRARIES(petioleGraphDiceCoefficient
  ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
+
+ADD_EXECUTABLE(petioleGraphVolumeNormalize GraphVolumeNormalize.cxx )
+TARGET_LINK_LIBRARIES(petioleGraphVolumeNormalize
+ ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
