@@ -31,3 +31,7 @@ TARGET_LINK_LIBRARIES(petioleCharacteristicPathLength
 ADD_EXECUTABLE(petioleGlobalEfficiency GlobalEfficiency.cxx )
 TARGET_LINK_LIBRARIES(petioleGlobalEfficiency
  ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
+
+ADD_EXECUTABLE(petioleGraphDiceCoefficient GraphDiceCoefficient.cxx )
+TARGET_LINK_LIBRARIES(petioleGraphDiceCoefficient
+ ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
