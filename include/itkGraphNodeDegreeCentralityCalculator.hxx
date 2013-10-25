@@ -48,8 +48,7 @@ GraphNodeDegreeCentralityCalculator< TInputImage, TValueType >
   this->m_DegreeCentrality->Initialize();
 
   unsigned long nNodes = this->m_Graph->GetTotalNumberOfNodes();
-  unsigned long nEdges = this->m_Graph->GetTotalNumberOfEdges();
-
+  //unsigned long nEdges = this->m_Graph->GetTotalNumberOfEdges();
   
   for ( unsigned int i=0; i<nNodes; i++)
     {

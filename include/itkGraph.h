@@ -171,28 +171,28 @@ public:
     { return ( this->HasEdge(i,j) || this->HasEdge(j,i) ); }
 
   /** Get Node/Edge Identifiers */
-  NodeIdentifierType GetNodeIdentifier( NodePointerType node )
+  NodeIdentifierType GetNodeIdentifier( NodePointerType node ) const
     { return node->Identifier; }
-  EdgeIdentifierType GetEdgeIdentifier( EdgePointerType edge )
+  EdgeIdentifierType GetEdgeIdentifier( EdgePointerType edge ) const
     { return edge->Identifier; }
-  NodeIdentifierType GetNodeIdentifier( NodeType node )
+  NodeIdentifierType GetNodeIdentifier( NodeType node ) const 
     { return node.Identifier; }
-  EdgeIdentifierType GetEdgeIdentifier( EdgeType edge )
+  EdgeIdentifierType GetEdgeIdentifier( EdgeType edge ) const
     { return edge.Identifier; }
 
   /** Get/Set/Add Node/Edge weights */
-  NodeWeightType GetNodeWeight( NodePointerType Node )
+  NodeWeightType GetNodeWeight( NodePointerType Node ) const
     { return Node->Weight; }
-  EdgeWeightType GetEdgeWeight( EdgePointerType Edge )
+  EdgeWeightType GetEdgeWeight( EdgePointerType Edge ) const
     { return Edge->Weight; }
-  NodeWeightType GetNodeWeight( NodeType Node )
+  NodeWeightType GetNodeWeight( NodeType Node ) const
     { return Node.Weight; }
-  EdgeWeightType GetEdgeWeight( EdgeType Edge )
+  EdgeWeightType GetEdgeWeight( EdgeType Edge ) const
     { return Edge.Weight; }
   NodeWeightType GetNodeWeight( NodeIdentifierType Id ) const
     { return this->m_Nodes->ElementAt( Id ).Weight; }
-  EdgeWeightType GetEdgeWeight( EdgeIdentifierType Id )
-    { return this->GetEdgePointer( Id )->Weight; }
+  EdgeWeightType GetEdgeWeight( EdgeIdentifierType Id ) const
+    { return this->m_Edges->ElementAt( Id ).Weight; }
   void SetNodeWeight( NodePointerType Node, NodeWeightType w )
     { Node->Weight = w; }
   void SetEdgeWeight( EdgePointerType Edge, EdgeWeightType w )
@@ -258,6 +258,12 @@ public:
   itkGetMacro( IsDirected, bool );
   
   itkSetMacro( IsDirected, bool );
+
+  void IsDirectedOn() 
+  { m_IsDirected = true; }
+
+  void IsUndirectedOn()
+  { m_IsDirected = false; }
 
   bool IsDirected ( void ) const
   { return m_IsDirected; }

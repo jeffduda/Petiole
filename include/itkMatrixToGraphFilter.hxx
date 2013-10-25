@@ -111,7 +111,7 @@ MatrixToGraphFilter<TGraph>
 
   for (unsigned int i=0; i<this->m_Matrix.Cols(); i++)
     {
-    NodePointerType node = output->CreateNewNode();
+    output->CreateNewNode();
     }
   
   for (unsigned int i=0; i<this->m_Matrix.Cols(); i++)
@@ -126,7 +126,8 @@ MatrixToGraphFilter<TGraph>
       {
       if ( this->m_Matrix(j,i) != 0 )
         {
-        EdgePointerType edge = output->CreateNewEdge(j,i,this->m_Matrix(j,i));
+        output->CreateNewEdge(j,i,this->m_Matrix(j,i));
+        //EdgePointerType edge = output->CreateNewEdge(j,i,this->m_Matrix(j,i));
         }
 
       }

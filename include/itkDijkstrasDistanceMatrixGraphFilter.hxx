@@ -78,11 +78,17 @@ DijkstrasDistanceMatrixGraphFilter<TGraph,TValueType>
       {
       if ( i != j ) 
         {
-        this->m_CharacteristicPathLength += this->m_NStepMatrix(i,j);
-        this->m_GlobalEfficiency += (1.0 / this->m_NStepMatrix(i,j));
-        if ( this->m_NStepMatrix(i,j) > this->m_NodeEccentricity[i] ) 
+        // throw exception if (NStep == 0)?
+
+        // Exclude unreachable nodes
+        if ( this->m_NStepMatrix(i,j) > 0 ) 
           {
-          this->m_NodeEccentricity[i] = this->m_NStepMatrix(i,j);
+          this->m_CharacteristicPathLength += this->m_NStepMatrix(i,j);
+          this->m_GlobalEfficiency += (1.0 / this->m_NStepMatrix(i,j));
+          if ( this->m_NStepMatrix(i,j) > this->m_NodeEccentricity[i] ) 
+            {
+            this->m_NodeEccentricity[i] = this->m_NStepMatrix(i,j);
+            }
           }
         }
       }
