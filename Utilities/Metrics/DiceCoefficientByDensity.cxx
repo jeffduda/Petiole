@@ -24,6 +24,7 @@
 #include "itkGraphFileReader.h"
 #include "itkGraphFileWriter.h"
 #include "itkGraphIntersectionGraphFilter.h"
+#include "itkDensityThresholdGraphFilter.h"
 
 
 int main( int argc, char * argv [] )
@@ -35,10 +36,11 @@ int main( int argc, char * argv [] )
   typedef itk::GraphFileWriter<GraphType>                GraphWriterType;
 
   typedef itk::GraphIntersectionGraphFilter<GraphType,GraphType> FilterType;
+  typedef itk::DensityThresholdGraphFilter<GraphType,GraphType>  ThresholdType;
 
-  if ( argc < 3 )
+  if ( argc < 6 )
     {
-    std::cout << "usage: " << argv[0] << "input1.csv input2.csv [overlap_graph.csv]" << std::endl;
+    std::cout << "usage: " << argv[0] << "input1.csv input2.csv density_start density_end density_increment" << std::endl;
     return EXIT_FAILURE;
     }
 
@@ -53,7 +55,6 @@ int main( int argc, char * argv [] )
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
     }
-  GraphType::Pointer graph1 = reader1->GetOutput();
 
   GraphReaderType::Pointer reader2 = GraphReaderType::New();
   reader2->SetFileName( argv[2] );
@@ -66,34 +67,44 @@ int main( int argc, char * argv [] )
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
     }
-  GraphType::Pointer graph2 = reader2->GetOutput();
-
-  FilterType::Pointer intersection = FilterType::New();
-  intersection->SetInput(0,reader1->GetOutput());
-  intersection->SetInput(1,reader2->GetOutput());
-  intersection->Update();
-
-  float dice = 2.0 * intersection->GetOutput()->GetTotalNumberOfEdges() / 
-    ( graph1->GetTotalNumberOfEdges() + graph2->GetTotalNumberOfEdges() );
-  std::cout << dice << std::endl;
   
-  if ( (argc > 3) && (dice > 0) )
+  float d1 = atof( argv[3] );
+  float d2 = atof( argv[4] );
+  float di = atof( argv[5] );
+
+  reader1->GetOutput()->IsUndirectedOn();
+  reader2->GetOutput()->IsUndirectedOn();
+  
+  if ( d2 < d1 ) 
     {
-    GraphWriterType::Pointer writer = GraphWriterType::New();
-    writer->SetFileName( argv[3] );
-    writer->SetInput( intersection->GetOutput() );
-    writer->SetColumnHeaders( reader1->GetColumnHeaders() ); 
+    std::cout << "density_end must be larger than density_start" << std::endl;
+    return EXIT_FAILURE;
+    }
+
+  for ( float d=d1; d<=d2; d+=di)
+    {
+
+    ThresholdType::Pointer thresh1 = ThresholdType::New();
+    thresh1->SetInput( reader1->GetOutput() );
+    thresh1->SetDensity( d );
+
+    ThresholdType::Pointer thresh2 = ThresholdType::New();
+    thresh2->SetInput( reader2->GetOutput() );
+    thresh2->SetDensity( d );    
+
+    FilterType::Pointer intersection = FilterType::New();
+    intersection->SetInput(0,thresh1->GetOutput());
+    intersection->SetInput(1,thresh2->GetOutput());
+    intersection->Update();
     
-    try 
+    float dice = 2.0 * intersection->GetOutput()->GetTotalNumberOfEdges() / 
+      ( thresh1->GetOutput()->GetTotalNumberOfEdges() + thresh2->GetOutput()->GetTotalNumberOfEdges() );
+    std::cout << dice;
+    if ( !( (d+di > d2) ) )
       {
-      writer->Update();
-      }
-    catch( itk::ExceptionObject & excp )
-      {
-      std::cerr << excp << std::endl;
-      return EXIT_FAILURE;
+      std::cout << ",";
       }
     }
-  
+  std::cout << std::endl;  
   return EXIT_SUCCESS;
 }

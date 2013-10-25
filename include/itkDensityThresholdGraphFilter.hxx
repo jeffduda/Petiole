@@ -81,11 +81,6 @@ DensityThresholdGraphFilter<TInputGraph,TOutputGraph>
     output->CreateNewNode();
     }
 
-  for (unsigned long i = 0; i < nEdges; i++) 
-    {
-    std::cout << vp[i].second << " - " << vp[i].first << std::endl;
-    }
-
   for (unsigned long i = 0; i != vp.size(); i++) 
     {
     if ( i > ( vp.size() - 1 - nOutEdges) ) 
