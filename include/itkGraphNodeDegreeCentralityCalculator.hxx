@@ -34,7 +34,7 @@ GraphNodeDegreeCentralityCalculator< TInputImage, TValueType >
   this->m_DegreeCentrality = ValueVectorType::New();
   this->m_DegreeCentrality->Initialize();
   this->m_DegreeType = DEGREE_SYMMETRIC;
-  this->m_ExcluceUnconnected = false;
+  this->m_ExcludeUnconnected = false;
 }
 
 /**
