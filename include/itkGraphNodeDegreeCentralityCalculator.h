@@ -97,6 +97,9 @@ public:
   ValueVectorPointer GetDegreeCentrality( void ) 
   { return this->m_DegreeCentrality; }
 
+  itkGetMacro(ExcludeUnconnected, bool);
+  itkSetMacro(ExcludeUnconnected, bool);
+
   /** Set the region over which the values will be computed */
   //void SetRegion(const RegionType & region);
 
@@ -114,6 +117,8 @@ private:
   ValueVectorPointer m_DegreeCentrality;
 
   DegreeType m_DegreeType;
+
+  bool m_ExcludeUnconnected;
 
   //RegionType m_Region;
   //bool       m_RegionSetByUser;

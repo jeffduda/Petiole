@@ -35,7 +35,7 @@ int main( int argc, char * argv [] )
 
   if ( argc < 2 )
     {
-    std::cout << "usage: " << argv[0] << "input.csv [0=undireted,1=directed-in,2=directed-out] " << std::endl;
+    std::cout << "usage: " << argv[0] << "input.csv [0=all_nodes,1=non-zero nodes only] [0=undireted,1=directed-in,2=directed-out] " << std::endl;
     return EXIT_FAILURE;
     }
 
@@ -43,16 +43,26 @@ int main( int argc, char * argv [] )
   reader->SetFileName( argv[1] );
   //std::cout << "Reading file: " << argv[1] << std::endl;
 
+  bool allnodes = true;
   bool directed = false;
   bool dirout = false;
+
 
   if ( argc > 2 ) 
     {
     if ( atoi( argv[2] ) > 0)
       {
+      allnodes = false;
+      }
+    }
+
+  if ( argc > 3 ) 
+    {
+    if ( atoi( argv[3] ) > 0)
+      {
       directed = true;
       }
-    if ( atoi( argv[2] ) > 1)
+    if ( atoi( argv[3] ) > 1)
       {
       dirout = true;
       }
@@ -93,13 +103,24 @@ int main( int argc, char * argv [] )
   
 
   float mean = 0.0;
+  unsigned long nNodes = 0;
   for (unsigned int i=0; i<calc->GetDegreeCentrality()->Size(); i++)
     {
     //std::cout << calc->GetDegreeCentrality( i ) << " ";
     mean += calc->GetDegreeCentrality( i );
+    if ( calc->GetDegreeCentrality(i) > 0 ) 
+      {
+      ++nNodes;
+      }
     }
-  //std::cout << std::endl;
-  mean /= calc->GetDegreeCentrality()->Size();
+  if ( allnodes ) 
+    {
+    mean /= calc->GetDegreeCentrality()->Size();
+    }
+  else
+    {
+    mean /= nNodes;
+    }
   std::cout << mean << std::endl;
 
   return EXIT_SUCCESS;
