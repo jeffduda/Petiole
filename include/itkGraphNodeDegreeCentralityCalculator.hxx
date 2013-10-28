@@ -50,7 +50,7 @@ GraphNodeDegreeCentralityCalculator< TInputImage, TValueType >
 
   unsigned long nNodes = this->m_Graph->GetTotalNumberOfNodes();
   //unsigned long nEdges = this->m_Graph->GetTotalNumberOfEdges();
-x  
+ 
   for ( unsigned int i=0; i<nNodes; i++)
     {
     if ( this->m_DegreeType == DEGREE_SYMMETRIC )
