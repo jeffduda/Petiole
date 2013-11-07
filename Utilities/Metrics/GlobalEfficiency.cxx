@@ -43,7 +43,7 @@ int main( int argc, char * argv [] )
 
   GraphReaderType::Pointer reader = GraphReaderType::New();
   reader->SetFileName( argv[1] );
-  std::cout << "Reading file: " << argv[1] << std::endl;
+  //std::cout << "Reading file: " << argv[1] << std::endl;
 
   bool weighted = false;
   if ( argc > 2 ) 
@@ -53,7 +53,6 @@ int main( int argc, char * argv [] )
       weighted = true;
       }
     }
-
 
   try 
     {

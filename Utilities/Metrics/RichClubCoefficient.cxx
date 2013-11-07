@@ -33,7 +33,7 @@ int main( int argc, char * argv [] )
   typedef itk::GraphFileReader<GraphType>                    GraphReaderType;
   typedef itk::GraphRichClubCoefficientCalculator<GraphType> CalculatorType;
 
-  if ( argc < 2 )
+  if ( argc < 3 )
     {
     std::cout << "No input provided" << std::endl;
     return EXIT_FAILURE;
@@ -41,7 +41,6 @@ int main( int argc, char * argv [] )
 
   GraphReaderType::Pointer reader = GraphReaderType::New();
   reader->SetFileName( argv[1] );
-  std::cout << "Reading file: " << argv[1] << std::endl;
 
   try 
     {
@@ -53,28 +52,35 @@ int main( int argc, char * argv [] )
     return EXIT_FAILURE;
     }
     
+  unsigned int k = atoi( argv[2] );
+
   GraphType::Pointer graph = reader->GetOutput();
   graph->SetIsDirected( false );
-
-  // For now, mesh holds points only
-  std::cout << "Number of Nodes = " << graph->GetTotalNumberOfNodes() << std::endl;
-  std::cout << "Number of Edges = " << graph->GetTotalNumberOfEdges() << std::endl;
 
   CalculatorType::Pointer calc = CalculatorType::New();
   calc->SetGraph( graph );
 
-  std::cout << std::endl << "As undirected weighted graph" << std::endl;
-  calc->SetLevel( 1 );
-  calc->ComputeWeighted();
+  bool weighted = false;
 
-  std::cout << "k=1 weighted: " << calc->GetRichClubCoefficient() << std::endl;
-  calc->SetLevel( 2 );
-  calc->ComputeWeighted();
-  std::cout << "k=2 weighted: " << calc->GetRichClubCoefficient() << std::endl;
-  calc->SetLevel( 3 );
-  calc->ComputeWeighted();
-  std::cout << "k=3 weighted: " << calc->GetRichClubCoefficient() << std::endl;   
+  if ( argc > 3 ) 
+    {
+    if ( atoi(argv[3]) > 0 ) 
+      {
+      weighted = true;
+      }
+    }
 
+  calc->SetLevel( k );
+  if ( weighted ) 
+    {
+    calc->ComputeWeighted();
+    }
+  else 
+    {
+    calc->ComputeUnweighted();
+    }
+
+  std::cout << calc->GetRichClubCoefficient() << std::endl;
 
   return EXIT_SUCCESS;
 }
