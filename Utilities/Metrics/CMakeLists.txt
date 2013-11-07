@@ -47,3 +47,7 @@ TARGET_LINK_LIBRARIES(petioleGraphVolumeLengthNormalize
 ADD_EXECUTABLE(petioleDiceCoefficientByDensity DiceCoefficientByDensity.cxx )
 TARGET_LINK_LIBRARIES(petioleDiceCoefficientByDensity
  ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
+
+ADD_EXECUTABLE(petioleMeanLocalEfficienty MeanLocalEfficiency.cxx )
+TARGET_LINK_LIBRARIES(petioleMeanLocalEfficiency
+ ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
