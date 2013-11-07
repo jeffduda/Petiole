@@ -32,6 +32,10 @@ ADD_EXECUTABLE(petioleGlobalEfficiency GlobalEfficiency.cxx )
 TARGET_LINK_LIBRARIES(petioleGlobalEfficiency
  ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
 
+ADD_EXECUTABLE(petioleMeanLocalEfficiency MeanLocalEfficiency.cxx )
+TARGET_LINK_LIBRARIES(petioleMeanLocalEfficiency
+ ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
+
 ADD_EXECUTABLE(petioleGraphDiceCoefficient GraphDiceCoefficient.cxx )
 TARGET_LINK_LIBRARIES(petioleGraphDiceCoefficient
  ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
@@ -44,10 +48,7 @@ ADD_EXECUTABLE(petioleGraphVolumeLengthNormalize GraphVolumeLengthNormalize.cxx 
 TARGET_LINK_LIBRARIES(petioleGraphVolumeLengthNormalize
  ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
 
-ADD_EXECUTABLE(petioleDiceCoefficientByDensity DiceCoefficientByDensity.cxx )
-TARGET_LINK_LIBRARIES(petioleDiceCoefficientByDensity
+ADD_EXECUTABLE(petioleLargestConnectedComponent LargestConnectedComponent.cxx )
+TARGET_LINK_LIBRARIES(petioleLargestConnectedComponent
  ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
 
-ADD_EXECUTABLE(petioleMeanLocalEfficienty MeanLocalEfficiency.cxx )
-TARGET_LINK_LIBRARIES(petioleMeanLocalEfficiency
- ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
