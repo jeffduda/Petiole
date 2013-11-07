@@ -96,22 +96,29 @@ int main( int argc, char * argv [] )
   FilterType::MatrixType distanceMatrix = dijkstras->GetDistanceMatrix();
 
   float meanLocalEff = 0.0;
+  float fullCount = 0.0;
   for ( unsigned long i=0; i<graph->GetTotalNumberOfNodes(); i++) 
     {
     float localEff = 0.0;
-    for ( unsigned long j==0; j<graph->GetTotalNumberOfNodes(); j++)
+    float count = 0.0;
+    for ( unsigned long j=0; j<graph->GetTotalNumberOfNodes(); j++)
       {
-      float count = 0.0;
       if ( ( j != i ) && ( distanceMatrix(i,j) > 0 ) )
         {
         ++count;
-        localEff += distanceMatrix(i,j);
+        localEff += 1.0 / distanceMatrix(i,j);
         }
       }
-    localEff /= count;
+    if ( count > 0 ) 
+      {
+      localEff /= count;
+      ++fullCount;
+      }
     meanLocalEff += localEff;
+    //std::cout << localEff << " ";
     }
-  meanLocalEff /= graph->GetTotalNumberOfNodes();
+  meanLocalEff /= fullCount;
+  
 
   std::cout << meanLocalEff << std::endl;
 
