@@ -49,116 +49,105 @@ LargestConnectedComponentGraphFilter<TInputGraph,TOutputGraph>
 ::GenerateData( void )
 {
   OutputGraphPointer output = this->GetOutput();
-  typename InputGraphType::GraphTraitsType traits;  
 
+  // Convert input to search friendly graph
+  typename SearchGraphType::Pointer dgraph = SearchGraphType::New();
+  for (unsigned long i=0; i<this->GetInput()->GetTotalNumberOfNodes(); i++)
+    {
+    dgraph->CreateNewNode();
+    }
+  for (unsigned long i=0; i<this->GetInput()->GetTotalNumberOfEdges(); i++)
+    {
+    typename SearchGraphType::EdgePointerType edge = dgraph->CreateNewEdge();
+    edge->SourceIdentifier = this->GetInput()->GetEdge(i).SourceIdentifier;
+    edge->TargetIdentifier = this->GetInput()->GetEdge(i).TargetIdentifier;
+    edge->Weight = 1.0;
+    }
+  
   typename DistanceMatrixFilter::Pointer distanceFilter = DistanceMatrixFilter::New();
-  distanceFilter->SetInput( this->GetInput() );
+  distanceFilter->SetInput( dgraph );
   distanceFilter->Update();
+
   typename DistanceMatrixFilter::MatrixType mat = distanceFilter->GetDistanceMatrix();
+ 
+  typename itk::Array<unsigned long> labels;
+  labels.SetSize(this->GetInput()->GetTotalNumberOfNodes());
+  labels.Fill(0);
   
-  std::cout << mat << std::endl;
-
-/*
-
-  
-  unsigned long nNodes = this->GetInput()->GetTotalNumberOfNodes();
-  unsigned long nEdges = this->GetInput()->GetTotalNumberOfEdges();
-  typename OutputGraphType::RegionType::Pointer subgraph = OutputGraphType::RegionType::New();
+  unsigned long nLabels = 0;
+  unsigned long nLabeled = 0;
   unsigned long idx = 0;
-  for ( unsigned int i=0; i<nNodes; i++)
+  while ( nLabeled < this->GetInput()->GetTotalNumberOfNodes() )
     {
-    if ( degrees->GetDegreeCentrality()->GetElement(i) > this->m_Level )
+    if ( labels[idx] == 0 ) 
       {
-      subgraph->InsertElement( idx, i );
-      ++idx;
-      } 
-    }
-
-  if ( subgraph->Size() < 2 )
-    {
-    this->m_RichClubCoefficient = 0;
-    }
-  else
-    {
-    std::vector<float> weights;
-    typename OutputGraphType::RegionType::Pointer subedges = OutputGraphType::RegionType::New();
-    idx = 0;
-    ValueType weightsum = 0.0;
-    for ( unsigned int i=0; i<nEdges; i++)
-      {
-      weights.push_back( this->GetInput()->GetEdge(i).Weight );
-      if ( ( degrees->GetDegreeCentrality()->GetElement( this->GetInput()->GetEdge( i ).SourceIdentifier ) > this->m_Level ) &&
-           ( degrees->GetDegreeCentrality()->GetElement( this->GetInput()->GetEdge( i ).TargetIdentifier ) > this->m_Level ) )
+      ++nLabels;
+      labels[idx] = nLabels;
+      ++nLabeled;
+      for ( unsigned long i=0; i<this->GetInput()->GetTotalNumberOfNodes(); i++ )
         {
-        subedges->InsertElement(idx,i);
-        weightsum += this->GetInput()->GetEdge( i ).Weight;
-        ++idx;
+        if ( ( i != idx ) && ( mat(i,idx) > 0 ) )
+          {
+          labels[i] = nLabels;
+          ++nLabeled;
+          }
         }
-      }
-    
-    ValueType rcNodes = subgraph->Size();
-    ValueType rcEdges = subedges->Size();
-
-    if ( this->m_IsWeighted )
-      {
-      std::sort( weights.begin(), weights.end() );
-      ValueType normweighted = 0.0;
-      for (unsigned int i=(nEdges-subedges->Size()); i<nEdges; i++)
-        {
-        normweighted += weights[i];
-        }
-      this->m_RichClubCoefficient = weightsum / normweighted;
       }
     else
       {
-      this->m_RichClubCoefficient = rcEdges / ( rcNodes * (rcNodes-1) ); 
+      ++idx;
       }
-
     }
 
-  if ( subgraph->Size() > 0 ) 
+  typename itk::Array<unsigned long> labelSizes;
+  labelSizes.SetSize( nLabels );
+  labelSizes.Fill(0);
+  for ( unsigned long i=0; i<labels.Size(); i++ )
     {
-
-
-    itk::Array<unsigned long> newNodeId;
-    newNodeId.SetSize( this->GetInput()->GetTotalNumberOfNodes() );
-
-    for ( unsigned int i=0; i<subgraph->Size(); i++ )
-      {
-      NodePointerType node = output->CreateNewNode();
-      newNodeId[ subgraph->GetElement(i) ] = node->Identifier;
-      traits.CopyNodeStaticData( this->GetInput()->GetNode( subgraph->GetElement( i ) ), node );
-      }
-    
-    for ( unsigned int i=0; i<this->GetInput()->GetTotalNumberOfEdges(); i++)
-      {
-      unsigned long source = this->GetInput()->GetEdge( i ).SourceIdentifier;
-      unsigned long target = this->GetInput()->GetEdge( i ).TargetIdentifier;
-      bool hasSource = false;
-      bool hasTarget = false;
-      for (unsigned int j=0; j<subgraph->Size(); j++)
-        {
-        if ( source == subgraph->GetElement( j ) )
-          {
-          hasSource = true;
-          }
-        if ( target == subgraph->GetElement( j ) )
-          {
-          hasTarget = true;
-          }
-        }
-      if ( hasSource && hasTarget )
-        {
-        EdgePointerType edge = output->CreateNewEdge( newNodeId[source], newNodeId[target] );
-        traits.CopyEdgeStaticData( this->GetInput()->GetEdge( i ), edge );
-        }
-      }
+    labelSizes[ labels[i]-1 ] += 1;
     }
-  else
+
+  unsigned long maxLabel = 1;
+  unsigned long maxSize = labelSizes[0];
+
+  for (unsigned long i=0; i<labelSizes.Size(); i++)
     {
-    itkExceptionMacro( "itk::LargestConnectedComponentGraphFilter::GenerateData() needs an Region to extract " );
+    if ( labelSizes[i] > maxSize ) 
+      {
+      maxSize = labelSizes[i];
+      maxLabel = i+1;
+      }
     }
-*/
+
+  m_Map.SetSize( this->GetInput()->GetTotalNumberOfNodes() );
+  m_Map.Fill(0);
+  unsigned long newLabel = 1;
+  for (unsigned int i=0; i<this->GetInput()->GetTotalNumberOfNodes(); i++)
+    {
+    if ( labels[i] == maxLabel ) 
+      {
+      m_Map[i] = newLabel;
+      ++newLabel;
+      }
+    }
+
+  // Create output graph
+  for (unsigned long i=0; i<maxSize; i++)
+    {
+    output->CreateNewNode();
+    }
+  for ( unsigned long i=0; i<this->GetInput()->GetTotalNumberOfEdges(); i++)
+    {
+    unsigned long sourceid = this->GetInput()->GetEdge(i).SourceIdentifier;
+    unsigned long targetid = this->GetInput()->GetEdge(i).TargetIdentifier;
+
+    if ( (labels[sourceid] == maxLabel) && (labels[targetid] == maxLabel) )
+      {
+      //std::cout << "insert edge " << m_Map[sourceid]-1 << "-" << m_Map[targetid]-1 << std::endl;
+      typename OutputGraphType::EdgePointerType edge = output->CreateNewEdge( m_Map[sourceid]-1, m_Map[targetid]-1 );
+      edge->Weight =  this->GetInput()->GetEdge(i).Weight;
+      }
+    }
 }
 
 template <class TInputGraph, class TOutputGraph>

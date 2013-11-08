@@ -19,6 +19,8 @@
 
 #include "itkGraphFileWriter.h"
 #include <fstream>
+#include <sstream>
+#include <string>
 
 namespace itk {
 
@@ -198,6 +200,19 @@ GraphFileWriter<TInputGraph,TInputImage>
   if ( this->m_ColumnHeaders.size() > 0 )
     {
     writer->SetColumnHeaders( this->m_ColumnHeaders );
+    }
+  else
+    {
+    this->m_ColumnHeaders.resize( this->m_Input->GetTotalNumberOfNodes() );
+
+    for ( unsigned int i=0; i<this->m_Input->GetTotalNumberOfNodes(); i++)
+      {
+      std::stringstream ss;
+      ss << i;
+      this->m_ColumnHeaders[i] = ss.str();
+      }
+    writer->SetColumnHeaders( this->m_ColumnHeaders );
+
     }
   writer->Update(); 
 

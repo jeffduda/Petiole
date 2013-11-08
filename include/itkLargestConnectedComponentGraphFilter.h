@@ -26,6 +26,7 @@
 #include "itkGraphToGraphFilter.h"
 #include "itkExtractSubgraphFilter.h"
 #include "itkDijkstrasGraphTraits.h"
+#include "itkArray.h"
 
 namespace itk
 {
@@ -91,13 +92,19 @@ public:
 
   typedef typename OutputGraphType::EdgePointerType EdgePointerType;
 
-  typedef itk::DijkstrasGraphTraits<typename InputGraphType::TraitsType::NodeWeightType,3> DijkstrasTraitsType;
+  typedef DijkstrasGraphTraits<typename InputGraphType::GraphTraitsType::NodeWeightType> DijkstrasTraitsType;
 
-  typedef DijkstrasDistanceMatrixGraphFilter<InputGraphType> DistanceMatrixFilter;
+  typedef Graph<DijkstrasTraitsType> SearchGraphType;
+
+  typedef DijkstrasDistanceMatrixGraphFilter<SearchGraphType> DistanceMatrixFilter;
   
   typedef ExtractSubgraphFilter<InputGraphType, OutputGraphType> ExtractFilterType;
   
   typedef typename ExtractFilterType::Pointer                    ExtractFilterPointer;
+
+  typedef typename itk::Array<unsigned long> MapType;
+
+  itkGetMacro( Map, MapType );
 
   /** Prepare the output */
   void GenerateOutputInformation( void );
@@ -112,6 +119,9 @@ private:
   void operator=(const Self &);                //purposely not implemented
 
   void GenerateData();
+
+  MapType m_Map;
+  
 
 };
 } // end namespace itk

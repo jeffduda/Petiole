@@ -52,3 +52,6 @@ ADD_EXECUTABLE(petioleLargestConnectedComponent LargestConnectedComponent.cxx )
 TARGET_LINK_LIBRARIES(petioleLargestConnectedComponent
  ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
 
+ADD_EXECUTABLE(petioleLargestConnectedComponentSize LargestConnectedComponentSize.cxx )
+TARGET_LINK_LIBRARIES(petioleLargestConnectedComponentSize
+ ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )

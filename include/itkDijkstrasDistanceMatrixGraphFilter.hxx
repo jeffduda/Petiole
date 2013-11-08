@@ -71,7 +71,7 @@ DijkstrasDistanceMatrixGraphFilter<TGraph,TValueType>
   this->m_NodeEccentricity.Fill(0.0);
   this->m_Radius = nNodes;
   this->m_Diameter = 0.0;
-  unsigned long actualValues = 0;
+  //unsigned long actualValues = 0;
 
   for (unsigned int i = 0; i < nNodes; i++)
     {
@@ -84,7 +84,7 @@ DijkstrasDistanceMatrixGraphFilter<TGraph,TValueType>
         // Exclude unreachable nodes
         if ( this->m_NStepMatrix(i,j) > 0 ) 
           {
-          ++actualValues;
+          //++actualValues;
           this->m_CharacteristicPathLength += this->m_NStepMatrix(i,j);
           this->m_GlobalEfficiency += (1.0 / this->m_NStepMatrix(i,j));
           if ( this->m_NStepMatrix(i,j) > this->m_NodeEccentricity[i] ) 
@@ -106,8 +106,8 @@ DijkstrasDistanceMatrixGraphFilter<TGraph,TValueType>
 
   ValueType nValues = ((nNodes * nNodes) - nNodes );
 
-  this->m_CharacteristicPathLength /= actualValues;
-  this->m_GlobalEfficiency /= actualValues;
+  this->m_CharacteristicPathLength /= nValues;
+  this->m_GlobalEfficiency /= nValues;
 }
 
 
