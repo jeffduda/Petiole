@@ -36,6 +36,10 @@ ADD_EXECUTABLE(petioleMeanLocalEfficiency MeanLocalEfficiency.cxx )
 TARGET_LINK_LIBRARIES(petioleMeanLocalEfficiency
  ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
 
+ADD_EXECUTABLE(petioleGraphAssortativity GraphAssortativity.cxx )
+TARGET_LINK_LIBRARIES(petioleGraphAssortativity
+ ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )
+
 ADD_EXECUTABLE(petioleGraphDiceCoefficient GraphDiceCoefficient.cxx )
 TARGET_LINK_LIBRARIES(petioleGraphDiceCoefficient
  ${ITKPetioleToolkit_LIBRARIES} ${ITK_LIBRARIES} )

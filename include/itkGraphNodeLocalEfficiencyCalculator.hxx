@@ -15,10 +15,10 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __itkGraphNodeClusteringCoefficientCalculator_hxx
-#define __itkGraphNodeClusteringCoefficientCalculator_hxx
+#ifndef __itkGraphNodeLocalEfficiencyCalculator_hxx
+#define __itkGraphNodeLocalEfficiencyCalculator_hxx
 
-#include "itkGraphNodeClusteringCoefficientCalculator.h"
+#include "itkGraphNodeLocalEfficiencyCalculator.h"
 #include "itkImageRegionConstIteratorWithIndex.h"
 #include "itkNumericTraits.h"
 
@@ -28,11 +28,11 @@ namespace itk
  * Constructor
  */
 template< class TInputImage, typename TValueType >
-GraphNodeClusteringCoefficientCalculator< TInputImage, TValueType >
-::GraphNodeClusteringCoefficientCalculator()
+GraphNodeLocalEfficiencyCalculator< TInputImage, TValueType >
+::GraphNodeLocalEfficiencyCalculator()
 {
-  this->m_ClusteringCoefficient = ValueVectorType::New();
-  this->m_ClusteringCoefficient->Initialize();
+  this->m_LocalEfficiency = ValueVectorType::New();
+  this->m_LocalEfficiency->Initialize();
   this->m_IsWeighted = false;
 }
 
@@ -41,63 +41,80 @@ GraphNodeClusteringCoefficientCalculator< TInputImage, TValueType >
  */
 template< class TInputImage, typename TValueType >
 void
-GraphNodeClusteringCoefficientCalculator< TInputImage, TValueType >
+GraphNodeLocalEfficiencyCalculator< TInputImage, TValueType >
 ::Compute(void)
 {
-  this->m_ClusteringCoefficient = ValueVectorType::New();
-  this->m_ClusteringCoefficient->Initialize();
+  this->m_LocalEfficiency = ValueVectorType::New();
+  this->m_LocalEfficiency->Initialize();
 
   unsigned long nNodes = this->m_Graph->GetTotalNumberOfNodes();
 
   for ( unsigned int i=0; i<nNodes; i++)
     {
-    this->m_ClusteringCoefficient->InsertElement(i, 0);
+    this->m_LocalEfficiency->InsertElement(i, 0);
     NodeIdentifierContainerType neighbors = this->m_Graph->GetAllNeighbors( i );
-    ValueType triangles = 0;
+    //ValueType triangles = 0;
 
     if ( neighbors.size() > 1 )
       {
       
-      for ( unsigned int n=0; n<neighbors.size(); n++)
+      typename SearchGraphType::Pointer searchGraph = SearchGraphType::New();
+      for ( unsigned int j=0; j<nNodes; j++ )
         {
-        for ( unsigned int m=0; m<neighbors.size(); m++)
+        if ( j != i ) 
           {
-          if ( neighbors[m] != neighbors[n] )
-            {
-            if ( this->m_Graph->NodesAreNeighbors(neighbors[n],neighbors[m] ) ) 
-              {
-              if ( this->m_IsWeighted )
-                {
-                triangles += this->m_Graph->GetNodeWeight( i );
-                triangles += this->m_Graph->GetNodeWeight( neighbors[n] );
-                triangles += this->m_Graph->GetNodeWeight( neighbors[m] );
-                }
-              else
-                {
-                ++triangles;
-                }
-              }
-            }
+          searchGraph->CreateNewNode();
           }
-        ValueType denom = neighbors.size() * neighbors.size() - neighbors.size();
-        this->m_ClusteringCoefficient->InsertElement( i, triangles / denom );
         }
-      }
-    else 
-      {
-      this->m_ClusteringCoefficient->InsertElement( i, 0 );
-      }
+      for ( unsigned int j=0; j<this->m_Graph->GetTotalNumberOfEdges(); j++ )
+        {
+        unsigned long source = this->m_Graph->GetEdge(j).SourceIdentifier;
+        unsigned long target = this->m_Graph->GetEdge(j).TargetIdentifier;
+        if ( (source != i) && (target != i) )
+          {
+          if ( source > i )
+            {
+            --source;
+            }
+          if ( target > i ) 
+            {
+            --target;
+            }
+          typename SearchGraphType::EdgePointerType edge = searchGraph->CreateNewEdge(source,target);
+          edge->Weight = 1.0;
+          }
+        }
+
+      typename DistanceMatrixFilterType::Pointer filter = DistanceMatrixFilterType::New();
+      filter->SetInput( searchGraph );
+      filter->Update();
+
+      ValueType localEfficiency = 0.0;
+
+      for (unsigned long x1=0; x1 < neighbors.size(); x1++ )
+        {
+        for (unsigned long x2=x1+1; x2 < neighbors.size(); x2++ )
+          {
+          localEfficiency += 1.0 / filter->GetDistanceMatrix()(x1,x2);
+          }
+        }
+      
+      localEfficiency = localEfficiency / ( neighbors.size() * (neighbors.size()-1 ) );
+      this->m_LocalEfficiency->InsertElement(i, localEfficiency );
     
+      }
     }
+  
 }
+
 
 /**
  * Compute Min and Max of m_Image
  */
 template< class TInputImage, typename TValueType >
 void
-GraphNodeClusteringCoefficientCalculator< TInputImage, TValueType >
-::ComputeWeightedClusteringCoefficient(void)
+GraphNodeLocalEfficiencyCalculator< TInputImage, TValueType >
+::ComputeWeightedLocalEfficiency(void)
 {
   this->m_IsWeighted = true;
   this->Compute();
@@ -108,33 +125,22 @@ GraphNodeClusteringCoefficientCalculator< TInputImage, TValueType >
  */
 template< class TInputImage, typename TValueType >
 void
-GraphNodeClusteringCoefficientCalculator< TInputImage, TValueType >
-::ComputeClusteringCoefficient(void)
+GraphNodeLocalEfficiencyCalculator< TInputImage, TValueType >
+::ComputeLocalEfficiency(void)
 {
   this->m_IsWeighted = false;
   this->Compute();
 }
 
-/*
-template< class TInputImage >
-void
-GraphNodeClusteringCoefficientCalculator< TInputImage >
-::SetRegion(const RegionType & region)
-{
-  m_Region = region;
-  m_RegionSetByUser = true;
-}
-*/
-
 template< class TInputImage, typename TValueType >
 void
-GraphNodeClusteringCoefficientCalculator< TInputImage, TValueType >
+GraphNodeLocalEfficiencyCalculator< TInputImage, TValueType >
 ::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "Centrality: "
-     << m_ClusteringCoefficient
+  os << indent << "Local Efficiency: "
+     << m_LocalEfficiency
      << std::endl;
   //os << indent << "Region set by User: " << m_RegionSetByUser << std::endl;
 }

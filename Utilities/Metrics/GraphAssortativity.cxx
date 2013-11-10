@@ -22,7 +22,7 @@
 #include "itkImageGraphTraits.h"
 #include "itkGraph.h"
 #include "itkGraphFileReader.h"
-#include "itkGraphNodeLocalEfficiencyCalculator.h"
+#include "itkGraphNodeAssortativityCalculator.h"
 
 
 int main( int argc, char * argv [] )
@@ -31,7 +31,7 @@ int main( int argc, char * argv [] )
   typedef itk::ImageGraphTraits<int,3>                               GraphTraitsType;
   typedef itk::Graph<GraphTraitsType>                                GraphType;
   typedef itk::GraphFileReader<GraphType>                            GraphReaderType;
-  typedef itk::GraphNodeLocalEfficiencyCalculator<GraphType>         CalculatorType;
+  typedef itk::GraphNodeAssortativityCalculator<GraphType>           CalculatorType;
 
   if ( argc < 2 )
     {
@@ -59,13 +59,7 @@ int main( int argc, char * argv [] )
   calc->SetGraph( graph );
   calc->Compute();
 
-  float mean = 0.0;
-  for (unsigned int i=0; i<calc->GetLocalEfficiency()->Size(); i++)
-    {
-    mean += calc->GetLocalEfficiency( i );
-    }
-
-  std::cout << mean / graph->GetTotalNumberOfNodes() << std::endl;
+  std::cout << calc->GetAssortativity() << std::endl;
 
   return EXIT_SUCCESS;
 }

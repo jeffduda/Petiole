@@ -15,16 +15,18 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __itkGraphNodeClusteringCoefficientCalculator_h
-#define __itkGraphNodeClusteringCoefficientCalculator_h
+#ifndef __itkGraphNodeLocalEfficiencyCalculator_h
+#define __itkGraphNodeLocalEfficiencyCalculator_h
 
 #include "itkObject.h"
 #include "itkObjectFactory.h"
 #include "itkVectorContainer.h"
+#include "itkDijkstrasGraphTraits.h"
+#include "itkDijkstrasDistanceMatrixGraphFilter.h"
 
 namespace itk
 {
-/** \class GraphNodeClusteringCoefficientCalculator
+/** \class GraphNodeLocalEfficiencyCalculator
  *  \brief Computes the minimum and the maximum intensity values of
  *         an image.
  *
@@ -37,16 +39,16 @@ namespace itk
  * \ingroup ITKCommon
  *
  * \wiki
- * \wikiexample{ImageProcessing/GraphNodeClusteringCoefficientCalculator,Find the minimum and maximum value (and the position of the value) in an image}
+ * \wikiexample{ImageProcessing/GraphNodeLocalEfficiencyCalculator,Find the minimum and maximum value (and the position of the value) in an image}
  * \wikiexample{Developer/OilPaintingImageFilter,Multi-threaded oil painting image filter}
  * \endwiki
  */
 template< class TInputGraph, typename TValueType=float >
-class ITK_EXPORT GraphNodeClusteringCoefficientCalculator:public Object
+class ITK_EXPORT GraphNodeLocalEfficiencyCalculator:public Object
 {
 public:
   /** Standard class typedefs. */
-  typedef GraphNodeClusteringCoefficientCalculator Self;
+  typedef GraphNodeLocalEfficiencyCalculator Self;
   typedef Object                        Superclass;
   typedef SmartPointer< Self >          Pointer;
   typedef SmartPointer< const Self >    ConstPointer;
@@ -55,13 +57,16 @@ public:
   typedef VectorContainer<unsigned long, ValueType>  ValueVectorType;
   typedef typename ValueVectorType::Pointer          ValueVectorPointer;
 
-  typedef enum { DEGREE_SYMMETRIC, DEGREE_IN, DEGREE_OUT } DegreeType;
+  typedef DijkstrasGraphTraits<float,3>   SearchGraphTraits;
+  typedef Graph<SearchGraphTraits>        SearchGraphType;
+
+  typedef DijkstrasDistanceMatrixGraphFilter<SearchGraphType> DistanceMatrixFilterType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(GraphNodeClusteringCoefficientCalculator, Object);
+  itkTypeMacro(GraphNodeLocalEfficiencyCalculator, Object);
 
   /** Type definition for the input image. */
   typedef TInputGraph GraphType;
@@ -87,32 +92,32 @@ public:
   /** Compute the centrality of the nodes in the graph. */
   void Compute(void);
 
-  void ComputeWeightedClusteringCoefficient(void);
+  void ComputeWeightedLocalEfficiency(void);
 
-  void ComputeClusteringCoefficient(void);
+  void ComputeLocalEfficiency(void);
 
   /** Return the centrality for node n */
-  ValueType GetClusteringCoefficient( unsigned int n )
-  { return this->m_ClusteringCoefficient->GetElement( n ); }
+  ValueType GetLocalEfficiency( unsigned int n )
+  { return this->m_LocalEfficiency->GetElement( n ); }
 
-  ValueVectorPointer GetClusteringCoefficient( void ) 
-  { return this->m_ClusteringCoefficient; }
+  ValueVectorPointer GetLocalEfficiency( void ) 
+  { return this->m_LocalEfficiency; }
 
   /** Set the region over which the values will be computed */
   //void SetRegion(const RegionType & region);
 
 protected:
-  GraphNodeClusteringCoefficientCalculator();
-  virtual ~GraphNodeClusteringCoefficientCalculator() {}
+  GraphNodeLocalEfficiencyCalculator();
+  virtual ~GraphNodeLocalEfficiencyCalculator() {}
   void PrintSelf(std::ostream & os, Indent indent) const;
 
 private:
-  GraphNodeClusteringCoefficientCalculator(const Self &); //purposely not implemented
+  GraphNodeLocalEfficiencyCalculator(const Self &); //purposely not implemented
   void operator=(const Self &);                //purposely not implemented
 
   GraphConstPointer m_Graph;
 
-  ValueVectorPointer m_ClusteringCoefficient;
+  ValueVectorPointer m_LocalEfficiency;
 
   bool m_IsWeighted;
 
@@ -122,7 +127,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkGraphNodeClusteringCoefficientCalculator.hxx"
+#include "itkGraphNodeLocalEfficiencyCalculator.hxx"
 #endif
 
-#endif /* __itkGraphNodeClusteringCoefficientCalculator_h */
+#endif /* __itkGraphNodeLocalEfficiencyCalculator_h */
