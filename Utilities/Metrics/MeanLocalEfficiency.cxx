@@ -24,6 +24,7 @@
 #include "itkGraph.h"
 #include "itkGraphFileReader.h"
 #include "itkDijkstrasDistanceMatrixGraphFilter.h"
+#include "itkLargestConnectedComponentGraphFilter.h"
 
 
 int main( int argc, char * argv [] )
@@ -34,6 +35,8 @@ int main( int argc, char * argv [] )
   typedef itk::GraphFileReader<GraphType>                          GraphReaderType;
   typedef itk::Graph<GraphTraitsType>                              SearchGraphType;
   typedef itk::DijkstrasDistanceMatrixGraphFilter<SearchGraphType> FilterType;
+
+  typedef itk::LargestConnectedComponentGraphFilter<GraphType,GraphType> ConnectedType;
 
   if ( argc < 2 )
     {
@@ -69,19 +72,23 @@ int main( int argc, char * argv [] )
   graph->SetIsDirected( false );
   graph->SetIncomingAndOutgoingEdges();
 
+  ConnectedType::Pointer connected = ConnectedType::New();
+  connected->SetInput( graph );
+  connected->Update();
+
   SearchGraphType::Pointer dgraph = SearchGraphType::New();
-  for (unsigned long i=0; i<graph->GetTotalNumberOfNodes(); i++)
+  for (unsigned long i=0; i<connected->GetOutput()->GetTotalNumberOfNodes(); i++)
     {
     dgraph->CreateNewNode();
     }
-  for (unsigned long i=0; i<graph->GetTotalNumberOfEdges(); i++)
+  for (unsigned long i=0; i<connected->GetOutput()->GetTotalNumberOfEdges(); i++)
     {
     SearchGraphType::EdgePointerType edge = dgraph->CreateNewEdge();
-    edge->SourceIdentifier = graph->GetEdgePointer(i)->SourceIdentifier;
-    edge->TargetIdentifier = graph->GetEdgePointer(i)->TargetIdentifier;
+    edge->SourceIdentifier = connected->GetOutput()->GetEdgePointer(i)->SourceIdentifier;
+    edge->TargetIdentifier = connected->GetOutput()->GetEdgePointer(i)->TargetIdentifier;
     if ( weighted ) 
       {
-      edge->Weight = graph->GetEdgePointer(i)->Weight;
+      edge->Weight = connected->GetOutput()->GetEdgePointer(i)->Weight;
       }
     else
       {
@@ -95,32 +102,26 @@ int main( int argc, char * argv [] )
 
   FilterType::MatrixType distanceMatrix = dijkstras->GetDistanceMatrix();
 
-  float meanLocalEff = 0.0;
-  float fullCount = 0.0;
-  for ( unsigned long i=0; i<graph->GetTotalNumberOfNodes(); i++) 
+  float meanNodalEff = 0.0;
+  for ( unsigned long i=0; i<connected->GetOutput()->GetTotalNumberOfNodes(); i++) 
     {
-    float localEff = 0.0;
+    float nodalEff = 0.0;
     float count = 0.0;
-    for ( unsigned long j=0; j<graph->GetTotalNumberOfNodes(); j++)
+    for ( unsigned long j=0; j<connected->GetOutput()->GetTotalNumberOfNodes(); j++)
       {
-      if ( ( j != i ) && ( distanceMatrix(i,j) > 0 ) )
+      if ( j != i ) 
         {
-        ++count;
-        localEff += 1.0 / distanceMatrix(i,j);
+        nodalEff += 1.0 / distanceMatrix(i,j);
         }
       }
-    if ( count > 0 ) 
-      {
-      localEff /= count;
-      ++fullCount;
-      }
-    meanLocalEff += localEff;
-    //std::cout << localEff << " ";
+    nodalEff /= (connected->GetOutput()->GetTotalNumberOfNodes()-1.0);
+    meanNodalEff += nodalEff;
     }
-  meanLocalEff /= fullCount;
+
+  meanNodalEff /= connected->GetOutput()->GetTotalNumberOfNodes();
   
 
-  std::cout << meanLocalEff << std::endl;
+  std::cout << meanNodalEff << std::endl;
 
   return EXIT_SUCCESS;
 }

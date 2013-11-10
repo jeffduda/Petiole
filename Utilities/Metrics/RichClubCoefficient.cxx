@@ -56,9 +56,11 @@ int main( int argc, char * argv [] )
 
   GraphType::Pointer graph = reader->GetOutput();
   graph->SetIsDirected( false );
+  graph->SetIncomingAndOutgoingEdges();
 
   CalculatorType::Pointer calc = CalculatorType::New();
   calc->SetGraph( graph );
+  calc->SetLevel( k );
 
   bool weighted = false;
 

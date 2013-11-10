@@ -72,23 +72,23 @@ int main( int argc, char * argv [] )
   graph->SetIsDirected( false );
   graph->SetIncomingAndOutgoingEdges();
 
-  ConnectedType::Pointer connected = ConnectedType::New();
-  connected->SetInput( graph );
-  connected->Update();
+  //ConnectedType::Pointer connected = ConnectedType::New();
+  //connected->SetInput( graph );
+  //connected->Update();
 
   SearchGraphType::Pointer dgraph = SearchGraphType::New();
-  for (unsigned long i=0; i<connected->GetOutput()->GetTotalNumberOfNodes(); i++)
+  for (unsigned long i=0; i<graph->GetTotalNumberOfNodes(); i++)
     {
     dgraph->CreateNewNode();
     }
-  for (unsigned long i=0; i<connected->GetOutput()->GetTotalNumberOfEdges(); i++)
+  for (unsigned long i=0; i<graph->GetTotalNumberOfEdges(); i++)
     {
     SearchGraphType::EdgePointerType edge = dgraph->CreateNewEdge();
-    edge->SourceIdentifier = connected->GetOutput()->GetEdgePointer(i)->SourceIdentifier;
-    edge->TargetIdentifier = connected->GetOutput()->GetEdgePointer(i)->TargetIdentifier;
+    edge->SourceIdentifier = graph->GetEdgePointer(i)->SourceIdentifier;
+    edge->TargetIdentifier = graph->GetEdgePointer(i)->TargetIdentifier;
     if ( weighted ) 
       {
-      edge->Weight = connected->GetOutput()->GetEdgePointer(i)->Weight;
+      edge->Weight = graph->GetEdgePointer(i)->Weight;
       }
     else
       {

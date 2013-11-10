@@ -79,7 +79,6 @@ DijkstrasDistanceMatrixGraphFilter<TGraph,TValueType>
       {
       if ( i != j ) 
         {
-        // throw exception if (NStep == 0)?
 
         // Exclude unreachable nodes
         if ( this->m_NStepMatrix(i,j) > 0 ) 
