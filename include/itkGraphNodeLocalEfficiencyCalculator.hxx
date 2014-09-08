@@ -95,7 +95,10 @@ GraphNodeLocalEfficiencyCalculator< TInputImage, TValueType >
         {
         for (unsigned long x2=x1+1; x2 < neighbors.size(); x2++ )
           {
-          localEfficiency += 1.0 / filter->GetDistanceMatrix()(x1,x2);
+          if ( filter->GetDistanceMatrix()(x1,x2) > 0 )
+            {
+            localEfficiency += 1.0 / filter->GetDistanceMatrix()(x1,x2);
+            }
           }
         }
       
