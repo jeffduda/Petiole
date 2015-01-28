@@ -223,11 +223,11 @@ public:
   virtual bool IsPixelANode(IndexType idx)
     { return ( !this->m_ExcludeBackground ||
       ( this->GetInput()->GetPixel( idx ) != this->m_BackgroundValue ) ); }
-  virtual EdgeWeightType GetEdgeWeight(IndexType idx1, IndexType idx2 )
+  virtual EdgeWeightType GetEdgeWeight(IndexType itkNotUsed(idx1), IndexType itkNotUsed(idx2) )
       { return ( static_cast<EdgeWeightType>( 1 ) ); }
-  virtual NodeWeightType GetNodeWeight( IndexType idx )
+  virtual NodeWeightType GetNodeWeight( IndexType itkNotUsed(idx) )
       { return ( static_cast<NodeWeightType>( 1 ) ); }
-  virtual void NormalizeGraph( NodeImageType *im, OutputGraphType *g ) {}
+  virtual void NormalizeGraph( NodeImageType itkNotUsed(*im), OutputGraphType itkNotUsed(*g) ) {}
 
 protected:
   DefaultImageToGraphFunctor() {}
