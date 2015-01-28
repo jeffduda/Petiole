@@ -139,7 +139,7 @@ GraphFileReader<TGraph,TImage>
 {
 
   GraphPointer output = this->GetOutput();
-  
+
 
   typename VtkReaderType::Pointer reader = VtkReaderType::New();
   reader->SetFileName( this->m_FileName );
@@ -193,7 +193,7 @@ GraphFileReader<TGraph,TImage>
   reader->HasRowHeadersOff();
   reader->HasColumnHeadersOn();
 
-  try 
+  try
     {
     reader->Update();
     }
@@ -208,8 +208,8 @@ GraphFileReader<TGraph,TImage>
   this->m_ColumnHeaders = array->GetColumnHeaders();
 
   unsigned int nNodes = array->GetMatrix().cols();
-  
-  
+
+
   if ( nNodes != array->GetMatrix().rows() )
     {
     std::cout << "Rows = " << array->GetMatrix().rows() << " Cols = " << array->GetMatrix().cols() << std::endl;
@@ -262,14 +262,13 @@ GraphFileReader<TGraph,TImage>
   typename ImageMatrixReaderType::Pointer reader = ImageMatrixReaderType::New();
   reader->SetFileName( this->m_FileName );
 
-  try 
+  try
     {
     reader->Update();
     }
   catch( itk::ExceptionObject & excp )
     {
     itkExceptionMacro( "Failed to read input as image: " << this->m_FileName );
-    return EXIT_FAILURE;
     }
 
   unsigned int nNodes = reader->GetOutput()->GetLargestPossibleRegion().GetSize()[0];
@@ -277,7 +276,6 @@ GraphFileReader<TGraph,TImage>
   if ( nNodes != reader->GetOutput()->GetLargestPossibleRegion().GetSize()[1] )
     {
     itkExceptionMacro( "Failed to read image as square matrix: " << this->m_FileName );
-    return EXIT_FAILURE;
     }
 
   for (unsigned int i=0; i<nNodes; i++)
@@ -338,7 +336,7 @@ GraphFileReader<TGraph,TImage>
   char * offset2 = new char [4];
   char * version = new char [2];
   char * endian = new char [2];
-  
+
   bool swap = false;
 
   matfile.read( description, 116 );
@@ -347,7 +345,7 @@ GraphFileReader<TGraph,TImage>
   matfile.read( version, 2 );
   matfile.read( endian, 2 );
 
-  if ( std::string( endian ) == "IM" ) 
+  if ( std::string( endian ) == "IM" )
     {
     swap = true;
     }
@@ -358,7 +356,7 @@ GraphFileReader<TGraph,TImage>
   delete [] version;
   delete [] endian;
 
-  
+
   while ( !matfile.eof() )
     {
     uint32_t data_type, num_bytes;
@@ -371,7 +369,7 @@ GraphFileReader<TGraph,TImage>
 
     char * data = new char [ num_bytes ];
     matfile.read( data, num_bytes );
-    
+
     char * dest = new char [ 10000 ];
 
     z_stream strm;
@@ -388,48 +386,48 @@ GraphFileReader<TGraph,TImage>
     int ret = -1;
 
     err = inflateInit2(&strm, (15 + 32)); //15 window bits, and the +32 tells zlib to to detect if using gzip or zlib
-    if (err == Z_OK) 
+    if (err == Z_OK)
       {
       err = inflate(&strm, Z_FINISH);
-      if (err == Z_STREAM_END) 
+      if (err == Z_STREAM_END)
         {
         ret = strm.total_out;
         }
-      else 
+      else
         {
         inflateEnd(&strm);
         //return err;
         }
       }
-    else 
+    else
       {
       inflateEnd(&strm);
       //return err;
       }
-    
+
     inflateEnd(&strm);
 
     data_type = ( reinterpret_cast<uint32_t *>( dest ) )[0];
     num_bytes = ( reinterpret_cast<uint32_t *>( dest ) )[1];
     std::cout << "uncompressed data type = " << data_type << "," << num_bytes << std::endl;
-    
+
     // Array Flags
     uint32_t arrayOffset = sizeof(data_type) + sizeof(num_bytes);
     data_type = *( reinterpret_cast<uint32_t *>( dest + arrayOffset ) );
     uint32_t arrayFlagsSize = *( reinterpret_cast<uint32_t *>( dest + arrayOffset + sizeof(data_type) ) );
     std::cout << "Array flags type,size = " << data_type << "," << arrayFlagsSize << std::endl;
     unsigned int arrayClass =  (unsigned int) dest[arrayOffset + sizeof(data_type) + sizeof(arrayFlagsSize)];
-    unsigned int arrayFlags =  (unsigned int) dest[arrayOffset + sizeof(data_type) + sizeof(arrayFlagsSize) + 1];    
+    unsigned int arrayFlags =  (unsigned int) dest[arrayOffset + sizeof(data_type) + sizeof(arrayFlagsSize) + 1];
     std::cout << "  class = " << arrayClass << std::endl;
     std::cout << "  flags = " << arrayFlags << std::endl;
 
-    uint32_t dimensionOffset = arrayOffset + sizeof(data_type) + sizeof(arrayFlagsSize) + arrayFlagsSize; 
+    uint32_t dimensionOffset = arrayOffset + sizeof(data_type) + sizeof(arrayFlagsSize) + arrayFlagsSize;
     data_type = *( reinterpret_cast<uint32_t *>( dest + dimensionOffset ) );
     uint32_t dimensionDataSize = *( reinterpret_cast<uint32_t *>( dest + dimensionOffset + sizeof(data_type)  ) );
     std::cout << "Dimension type,size = " << data_type << "," << dimensionDataSize << std::endl;
     uint32_t nDimensions = dimensionDataSize;
 
-    if ( data_type > 4 ) 
+    if ( data_type > 4 )
       {
       nDimensions /= 2;
       }
@@ -448,19 +446,19 @@ GraphFileReader<TGraph,TImage>
       }
     std::cout << std::endl;
 
-    uint32_t nameOffset = dimensionOffset + sizeof(data_type) + sizeof(dimensionDataSize) + dimensionDataSize; 
+    uint32_t nameOffset = dimensionOffset + sizeof(data_type) + sizeof(dimensionDataSize) + dimensionDataSize;
     data_type = *( reinterpret_cast<uint32_t *>( dest + nameOffset ) );
     uint32_t nameDataSize = *( reinterpret_cast<uint32_t *>( dest + nameOffset + sizeof(data_type)  ) );
     std::cout << "Name type,size = " << data_type << "," << nameDataSize << std::endl;
     char * name = new char [nameDataSize];
-    
+
     for ( unsigned int i=0; i<nameDataSize; i++)
       {
       name[i] =  dest[ nameOffset + sizeof(data_type) + sizeof(nameDataSize) + i];
       }
     std::cout << "  Name = " << name << std::endl;
 
-    uint32_t realOffset = nameOffset + sizeof(data_type) + sizeof(nameDataSize) + nameDataSize + ( 8 - (nameDataSize % 8) );  ; 
+    uint32_t realOffset = nameOffset + sizeof(data_type) + sizeof(nameDataSize) + nameDataSize + ( 8 - (nameDataSize % 8) );  ;
     data_type = *( reinterpret_cast<uint32_t *>( dest + realOffset ) );
     uint32_t realDataSize = *( reinterpret_cast<uint32_t *>( dest + realOffset + sizeof(data_type)  ) );
     std::cout << "Real_data type,size = " << data_type << "," << realDataSize << std::endl;
@@ -472,7 +470,7 @@ GraphFileReader<TGraph,TImage>
     }
 
   matfile.close();
-  
+
 
   std::cout << "End of ReadMatlabMatrixData()" << std::endl;
 }
