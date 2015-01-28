@@ -328,7 +328,7 @@ VtkPolyDataFileReader<TOutputMesh>
     std::cerr << "Invalid header: " << line << std::endl;
     return false;
     }
-  
+
   // Get header info line (ignore for now)
   std::getline(this->m_InputFile, line);
 
@@ -376,10 +376,10 @@ VtkPolyDataFileReader<TOutputMesh>
 
     if ( line.find( "POINTS" ) != (std::string::npos) )
       {
-      
+
       std::string::size_type pos = line.rfind( " " );
       std::string dataType = std::string( line, pos+1, line.length()-1 );
-      
+
       pos = line.find( " " );
       std::string::size_type pos2 = line.find( " ", pos+1 );
       std::string temp = std::string( line, pos+1, (pos2-pos) );
@@ -407,7 +407,7 @@ VtkPolyDataFileReader<TOutputMesh>
       {
       std::string::size_type sp1 = line.find( " " );
       std::string::size_type sp2 = line.find( " ", sp1+1);
-      
+
       unsigned long nPolys = std::atoi( std::string( line, sp1+1, (sp2-sp1) ).c_str() );
       unsigned long nValues = std::atoi( std::string( line, sp2+1, line.length()-sp2 ).c_str()  );
 
@@ -420,7 +420,7 @@ VtkPolyDataFileReader<TOutputMesh>
       {
       std::string::size_type sp1 = line.find( " " );
       std::string::size_type sp2 = line.find( " ", sp1+1);
-      
+
       unsigned long nVertices = std::atoi( std::string( line, sp1+1, (sp2-sp1) ).c_str() );
       unsigned long nValues = std::atoi( std::string( line, sp2+1, line.length()-sp2 ).c_str()  );
 
@@ -433,7 +433,7 @@ VtkPolyDataFileReader<TOutputMesh>
       {
       std::string::size_type sp1 = line.find( " " );
       std::string::size_type sp2 = line.find( " ", sp1+1);
-      
+
       unsigned long nStrips = std::atoi( std::string( line, sp1+1, (sp2-sp1) ).c_str() );
       unsigned long nValues = std::atoi( std::string( line, sp2+1, line.length()-sp2 ).c_str()  );
 
@@ -445,9 +445,9 @@ VtkPolyDataFileReader<TOutputMesh>
     else if (line.find("POINT_DATA") != std::string::npos)
       {
       std::string::size_type sp1 = line.find( " " );
-      
+
       unsigned long nPoints = std::atoi( std::string( line, sp1, line.length()-1 ).c_str() );
-      
+
       if (!this->ReadVTKPointData( nPoints ))
         {
         return false;
@@ -456,9 +456,9 @@ VtkPolyDataFileReader<TOutputMesh>
     else if (line.find("CELL_DATA") != std::string::npos)
       {
       std::string::size_type sp1 = line.find( " " );
-      
+
       unsigned long nCells = std::atoi( std::string( line, sp1, line.length()-1 ).c_str() );
-      
+
       if (!this->ReadVTKCellData( nCells ))
         {
         return false;
@@ -467,7 +467,7 @@ VtkPolyDataFileReader<TOutputMesh>
       }
 
     }
-  
+
   this->m_InputFile.close();
   return true;
 
@@ -685,16 +685,16 @@ VtkPolyDataFileReader<TOutputMesh>
       {
       unsigned long vertexSize;
       this->m_InputFile >> vertexSize;
-      
+
       LineType vertex(vertexSize);
-      
+
       for (unsigned long j=0; j<vertexSize; j++)
         {
         unsigned long index;
         this->m_InputFile >> index;
         vertex[j] = index;
         }
-      this->m_Vertices->InsertElement(i,vertex); 
+      this->m_Vertices->InsertElement(i,vertex);
       }
     }
   else
@@ -745,16 +745,16 @@ VtkPolyDataFileReader<TOutputMesh>
       {
       unsigned long stripSize;
       this->m_InputFile >> stripSize;
-      
+
       LineType strip(stripSize);
-      
+
       for (unsigned long j=0; j<stripSize; j++)
         {
         unsigned long index;
         this->m_InputFile >> index;
         strip[j] = index;
         }
-      this->m_Strips->InsertElement(i,strip); 
+      this->m_Strips->InsertElement(i,strip);
       }
     }
   else
@@ -944,7 +944,7 @@ VtkPolyDataFileReader<TOutputMesh>
 template<class TOutputMesh>
 bool
 VtkPolyDataFileReader<TOutputMesh>
-::ReadVTKScalars( std::string dataName, std::string itkNotUsed(dataType), unsigned long nPoints, unsigned long nComponents, bool isPointData=true )
+::ReadVTKScalars( std::string dataName, std::string itkNotUsed(dataType), unsigned long nPoints, unsigned long nComponents, bool isPointData )
 {
 
   //std::cout << "Reading " << nPoints << " scalar data points with " << nComponents << " components of type " << dataType << " named " << dataName << std::endl;

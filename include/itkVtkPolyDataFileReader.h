@@ -173,7 +173,7 @@ private:
   bool ReadVTKStrips(unsigned long nLines, unsigned long nValues);
   bool ReadVTKPointData(unsigned long nPoints);
   bool ReadVTKCellData(unsigned long nCells);
-  bool ReadVTKScalars(std::string dataName, std::string dataType, unsigned long nPoints, unsigned long nComponents, bool isPointData);
+  bool ReadVTKScalars(std::string dataName, std::string dataType, unsigned long nPoints, unsigned long nComponents, bool isPointData=true);
 
 
 };
