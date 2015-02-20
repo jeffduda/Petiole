@@ -23,7 +23,7 @@
 #include "itkGraph.h"
 #include "itkMatrixToGraphFilter.h"
 
-int itkMatrixToGraphFilterTest( int argc, char * argv [] )
+int itkMatrixToGraphFilterTest( int itkNotUsed(argc), char * itkNotUsed(argv) [] )
 {
 
   typedef itk::DefaultGraphTraits<float>        GraphTraitsType;
@@ -47,7 +47,7 @@ int itkMatrixToGraphFilterTest( int argc, char * argv [] )
   filter->SetMatrix( matrix );
   filter->Update();
 
-  try 
+  try
     {
     filter->Update();
     }
@@ -56,7 +56,7 @@ int itkMatrixToGraphFilterTest( int argc, char * argv [] )
     std::cerr << excp << std::endl;
     return EXIT_FAILURE;
     }
-    
+
   // For now, mesh holds points only
   std::cout << "Number of Nodes = " << filter->GetOutput()->GetTotalNumberOfNodes() << std::endl;
   std::cout << "Number of Edges = " << filter->GetOutput()->GetTotalNumberOfEdges() << std::endl;
